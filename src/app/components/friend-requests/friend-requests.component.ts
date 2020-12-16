@@ -72,7 +72,13 @@ export class FriendRequestsComponent implements OnInit, OnDestroy, DoCheck {
           this.accountService.retrieveFriendRequests();
         }
       },
-      (reject) => { }
+      (reject) => {
+        /**
+         * TODO:
+         * Toast to tell the user that this friend request has been cancelled
+         */
+        this.accountService.retrieveFriendRequests();
+      }
     );
   }
 
@@ -89,7 +95,13 @@ export class FriendRequestsComponent implements OnInit, OnDestroy, DoCheck {
           this.accountService.retrieveFriendRequests();
         }
       },
-      (error) => { }
+      (error) => {
+        /**
+         * TODO:
+         * Toast to tell the user that this friend request has been cancelled
+         */
+        this.accountService.retrieveFriendRequests();
+      }
     );
   }
 

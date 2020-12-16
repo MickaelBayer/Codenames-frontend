@@ -48,46 +48,75 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onFriendRequest(): void {
-    this.accountService.retrieveFriendRequests();
-    this.uiService.showFriendRequests();
+    if (this.watchedProfile.friend_requests.length === 1) {
+      // tslint:disable-next-line: no-string-literal
+      this.accountService.viewProfile(this.watchedProfile.friend_requests[0]['sender']);
+    } else {
+      this.accountService.retrieveFriendRequests();
+      this.uiService.showFriendRequests();
+    }
   }
 
   onSendFriendRequest(): void {
-    this.accountService.sendFriendRequest(this.watchedProfile.id);
+    this.accountService.sendFriendRequest(this.watchedProfile.id).then(
+      () => { },
+      (errorMessage) => {
+        /**
+         * TODO:
+         * Toast to tell the user that this friend request has been cancelled
+         */
+        this.accountService.viewProfile(this.watchedProfile.id);
+      }
+    );
   }
 
   onCancelFriendRequest(): void {
-    console.log('onCancelFriendRequest');
+    this.accountService.cancelFriendRequest().then(
+      () => {
+        this.accountService.viewProfile(this.watchedProfile.id);
+      },
+      (error) => { }
+    );
   }
 
-  onDeclineFriendRequest(event: MouseEvent): void {
-    event.stopPropagation();
+  onDeclineFriendRequest(): void {
     this.accountService.retrieveFriendRequestsWithSearch(this.watchedProfile.email).then(
       () => {
-        if (this.friendRequests !== []) {
+        if (this.friendRequests.length !== 0) {
           this.accountService.declineFriendRequest(this.accountService.friendRequests[0].id).then(
             () => {
               this.accountService.viewProfile(this.watchedProfile.id);
             },
             (reject) => { }
           );
+        } else {
+          /**
+           * TODO:
+           * Toast to tell the user that this friend request has been cancelled
+           */
+          this.accountService.viewProfile(this.watchedProfile.id);
         }
       },
       () => { }
     );
   }
 
-  onAcceptFriendRequest(event: MouseEvent): void {
-    event.stopPropagation();
+  onAcceptFriendRequest(): void {
     this.accountService.retrieveFriendRequestsWithSearch(this.watchedProfile.email).then(
       () => {
-        if (this.friendRequests !== []) {
+        if (this.friendRequests.length !== 0) {
           this.accountService.acceptFriendRequest(this.accountService.friendRequests[0].id).then(
             () => {
               this.accountService.viewProfile(this.watchedProfile.id);
             },
             (reject) => { }
           );
+        } else {
+          /**
+           * TODO:
+           * Toast to tell the user that this friend request has been cancelled
+           */
+          this.accountService.viewProfile(this.watchedProfile.id);
         }
       },
       () => { }

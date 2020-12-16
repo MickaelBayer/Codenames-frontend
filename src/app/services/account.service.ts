@@ -211,13 +211,18 @@ export class AccountService {
 
   /***** Friends Request *****/
   // tslint:disable-next-line: variable-name
-  sendFriendRequest(reciever_id: number): void {
-    this.httpClient.post('friend/friend-request/', { reciever_id }).subscribe(
-      (response: string) => {
-        this.viewProfile(reciever_id);
-      },
-      (error) => {
-        console.log(error.error);
+  sendFriendRequest(reciever_id: number): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        this.httpClient.post('friend/friend-request/', { reciever_id }).subscribe(
+          (response: string) => {
+            this.viewProfile(reciever_id);
+            resolve();
+          },
+          (error) => {
+            reject(JSON.parse(error.error).message);
+          }
+        );
       }
     );
   }
@@ -280,6 +285,21 @@ export class AccountService {
     return new Promise(
       (resolve, reject) => {
         this.httpClient.get('friend/friend-decline/' + friend_request_id + '/').subscribe(
+          (response: string) => {
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      }
+    );
+  }
+
+  cancelFriendRequest(): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        this.httpClient.post('friend/friend-cancel/', { reciever_id: this.watchedProfile.id }).subscribe(
           (response: string) => {
             resolve();
           },
