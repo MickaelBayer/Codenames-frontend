@@ -44,7 +44,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onFriends(): void {
-    console.log('onFriendsClick');
+    this.accountService.getFriendList();
+    this.uiService.showFriendList();
   }
 
   onFriendRequest(): void {
@@ -121,6 +122,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       () => { }
     );
+  }
+
+  onSendMessage(): void {
+    console.log('onSendMessage');
   }
 
   onChangePassword(): void {

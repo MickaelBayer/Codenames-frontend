@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
         MatMenuModule,
         MatDividerModule,
         MatCheckboxModule,
+        MatChipsModule,
     ],
     exports: [
         MatButtonModule,
@@ -50,6 +52,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
         MatMenuModule,
         MatDividerModule,
         MatCheckboxModule,
+        MatChipsModule,
     ]
 })
 export class AppMaterialModule { }

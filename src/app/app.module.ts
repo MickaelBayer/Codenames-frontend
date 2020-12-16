@@ -20,6 +20,7 @@ import { SearchUserComponent } from './components/search-user/search-user.compon
 import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { FriendRequestsComponent } from './components/friend-requests/friend-requests.component';
+import { FriendListComponent } from './components/friend-list/friend-list.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { FriendRequestsComponent } from './components/friend-requests/friend-req
     ThemeSwitchComponent,
     SearchUserComponent,
     ProfileEditComponent,
-    FriendRequestsComponent
+    FriendRequestsComponent,
+    FriendListComponent
   ],
   imports: [
     AppMaterialModule,

@@ -20,6 +20,9 @@ export class UiService {
   showFriendRequestsComponent = false;
   showFriendRequestsComponent$ = new Subject<boolean>();
 
+  showFriendListComponent = false;
+  showFriendListComponent$ = new Subject<boolean>();
+
   authAccount: Account;
   authAccoutSub: Subscription;
 
@@ -51,9 +54,13 @@ export class UiService {
 
   showProfile(id: number): void {
     this.hideAllComponents();
-    this.accountService.viewProfile(id);
-    this.showProfileComponent = true;
-    this.emitShowProfileComponent();
+    this.accountService.viewProfile(id).then(
+      () => {
+        this.showProfileComponent = true;
+        this.emitShowProfileComponent();
+      },
+      (error) => { }
+    );
   }
 
   showProfileEdit(): void {
@@ -64,14 +71,25 @@ export class UiService {
 
   showSearchUserComponent(): void {
     this.hideAllComponents();
-    this.showSearchUser = true;
-    this.emitShowSearchUserComponent();
+    this.accountService.fetchAllProfiles().then(
+      () => {
+        this.showSearchUser = true;
+        this.emitShowSearchUserComponent();
+      },
+      (error) => { }
+    );
   }
 
   showFriendRequests(): void {
     this.hideAllComponents();
     this.showFriendRequestsComponent = true;
     this.emitShowFriendRequestComponent();
+  }
+
+  showFriendList(): void {
+    this.hideAllComponents();
+    this.showFriendListComponent = true;
+    this.emitShowFriendListComponent();
   }
 
   returnToHome(): void {
@@ -87,14 +105,16 @@ export class UiService {
     this.emitShowProfileEditComponent();
     this.showFriendRequestsComponent = false;
     this.emitShowFriendRequestComponent();
+    this.showFriendListComponent = false;
+    this.emitShowFriendListComponent();
   }
 
   emitShowProfileComponent(): void {
     // if we hide the profile component, we also set the watchedProfile to undefined
     // to avoid last profile watched to show on the next call to profile component
-    if (!this.showProfileComponent) {
-      this.accountService.resetWatchedProfile();
-    }
+    // if (!this.showProfileComponent) {
+    //   this.accountService.resetWatchedProfile();
+    // }
     this.showProfileComponent$.next(this.showProfileComponent);
   }
 
@@ -108,6 +128,10 @@ export class UiService {
 
   emitShowFriendRequestComponent(): void {
     this.showFriendRequestsComponent$.next(this.showFriendRequestsComponent);
+  }
+
+  emitShowFriendListComponent(): void {
+    this.showFriendListComponent$.next(this.showFriendListComponent);
   }
 
 }

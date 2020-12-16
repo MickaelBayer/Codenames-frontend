@@ -1,19 +1,19 @@
 import { Component, OnDestroy, OnInit, DoCheck, KeyValueDiffers, KeyValueDiffer } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Account } from 'src/app/models/account.model';
 import { AccountService } from 'src/app/services/account.service';
-import { UiService } from 'src/app/services/ui.service';
+import { Account } from '../../models/account.model';
 import { environment } from '../../../environments/environment';
+import { UiService } from 'src/app/services/ui.service';
 
 @Component({
-  selector: 'app-search-user',
-  templateUrl: './search-user.component.html',
-  styleUrls: ['./search-user.component.scss']
+  selector: 'app-friend-list',
+  templateUrl: './friend-list.component.html',
+  styleUrls: ['./friend-list.component.scss']
 })
-export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
+export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
 
-  searchedAccounts: Account[] = [];
-  searchedAccountsSub: Subscription;
+  friendList: Account[] = [];
+  friendListSub: Subscription;
 
   query = '';
 
@@ -26,12 +26,12 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
   ) { }
 
   ngOnInit(): void {
-    this.searchedAccountsSub = this.accountService.searchedAccounts$.subscribe(
+    this.friendListSub = this.accountService.friendList$.subscribe(
       (next: Account[]) => {
-        this.searchedAccounts = next;
+        this.friendList = next;
       }
     );
-    this.accountService.emitSearchedAccounts();
+    this.accountService.emitFriendList();
     this.differ = this.differs.find(this).create();
   }
 
@@ -41,10 +41,11 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
       if (change) {
         change.forEachChangedItem(item => {
           if (item.key === 'query') {
+            console.log(this.query);
             if (item.currentValue === '') {
-              this.accountService.fetchAllProfiles();
+              this.accountService.getFriendList();
             } else {
-              this.accountService.searchProfiles(item.currentValue);
+              this.accountService.getFriendListWithSearch(item.currentValue);
             }
           }
         });
@@ -52,21 +53,17 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
-  searchProfile(inputValue: string): void {
-    console.log(inputValue);
-  }
-
   getProfileImage(profile: Account): string {
     return environment.baseURL + profile.profile_image;
   }
 
-  onSendMessage(account: Account, event: MouseEvent): void {
+  onSendMessage(friend: Account, event: MouseEvent): void {
     event.stopPropagation();
-    console.log('send a message to ' + account.username);
+    console.log('send a message to ' + friend.username);
   }
 
   ngOnDestroy(): void {
-    this.searchedAccountsSub.unsubscribe();
+    this.friendListSub.unsubscribe();
   }
 
 }

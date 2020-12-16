@@ -23,6 +23,9 @@ export class AccountService {
   searchedAccounts: Account[] = [];
   searchedAccounts$ = new Subject<Account[]>();
 
+  friendList: Account[] = [];
+  friendList$ = new Subject<Account[]>();
+
   errorMsgs: any;
   errorMsgs$ = new Subject<any>();
 
@@ -138,13 +141,20 @@ export class AccountService {
     );
   }
 
-  viewProfile(profileId: number): void {
-    this.httpClient.get('account/' + profileId).subscribe(
-      (response: string) => {
-        this.watchedProfile = JSON.parse(response).data;
-        this.emitWatchedProfile();
-      },
-      (error) => { }
+  viewProfile(profileId: number): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        this.httpClient.get('account/' + profileId).subscribe(
+          (response: string) => {
+            this.watchedProfile = JSON.parse(response).data;
+            this.emitWatchedProfile();
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      }
     );
   }
 
@@ -167,24 +177,38 @@ export class AccountService {
     this.emitWatchedProfile();
   }
 
-  searchProfiles(query: string): void {
-    const params = new HttpParams().set('q', query);
-    this.httpClient.get('account/search/', { params }).subscribe(
-      (response: any) => {
-        this.searchedAccounts = JSON.parse(response).data;
-        this.emitSearchedAccounts();
-      },
-      (error) => { }
+  searchProfiles(query: string): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        const params = new HttpParams().set('q', query);
+        this.httpClient.get('account/search/', { params }).subscribe(
+          (response: any) => {
+            this.searchedAccounts = JSON.parse(response).data;
+            this.emitSearchedAccounts();
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      }
     );
   }
 
-  fetchAllProfiles(): void {
-    this.httpClient.get('account/all/').subscribe(
-      (response: any) => {
-        this.searchedAccounts = JSON.parse(response).data;
-        this.emitSearchedAccounts();
-      },
-      (error) => { }
+  fetchAllProfiles(): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        this.httpClient.get('account/all/').subscribe(
+          (response: any) => {
+            this.searchedAccounts = JSON.parse(response).data;
+            this.emitSearchedAccounts();
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      }
     );
   }
 
@@ -311,8 +335,32 @@ export class AccountService {
     );
   }
 
+  getFriendList(): void {
+    this.httpClient.get('friend/list/' + this.watchedProfile.id + '/').subscribe(
+      (response: string) => {
+        this.friendList = JSON.parse(response).friends;
+        this.emitFriendList();
+      },
+      (error) => { }
+    );
+  }
+
+  getFriendListWithSearch(query: string): void {
+    const params = new HttpParams().set('q', query);
+    this.httpClient.get('friend/list/' + this.watchedProfile.id + '/', { params }).subscribe(
+      (response: string) => {
+        this.friendList = JSON.parse(response).friends;
+        this.emitFriendList();
+      },
+      (error) => { }
+    );
+  }
+
   emitFriendRequests(): void {
     this.friendRequests$.next(this.friendRequests);
   }
 
+  emitFriendList(): void {
+    this.friendList$.next(this.friendList.slice());
+  }
 }

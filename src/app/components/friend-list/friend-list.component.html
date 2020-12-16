@@ -1,0 +1,34 @@
+<div class="search-component-container">
+    <div class="search-input-container">
+        <mat-icon>search</mat-icon>
+        <mat-form-field class="search-input">
+            <input matInput placeholder="Search..." [(ngModel)]="query">
+        </mat-form-field>
+    </div>
+    <div class="card-container">
+        <mat-card *ngFor="let friend of friendList" (click)="uiService.showProfile(friend.id)">
+            <mat-card-content>
+                <img alt="profile_image" [src]="getProfileImage(friend)" />
+                <div class="account-text">
+                    <h3 style="margin: 0;">{{friend.username}}</h3>
+                </div>
+                <div class="spacer"></div>
+                <mat-chip-list style="margin-left: 20px; cursor: pointer;">
+                    <mat-chip color="primary" selected *ngIf="friend.is_friend" class="account-chip">Friends
+                    </mat-chip>
+                    <mat-chip color="accent" selected *ngIf="!friend.is_friend && !friend.is_self" class="account-chip">
+                        Not friends
+                    </mat-chip>
+                    <mat-chip color="accent" *ngIf="friend.is_self" class="account-chip">This is you</mat-chip>
+                </mat-chip-list>
+            </mat-card-content>
+            <mat-card-actions *ngIf="friend.is_friend" style="display: flex; justify-content: space-around;">
+                <button mat-stroked-button color="primary" style="margin: auto;"
+                    (click)="onSendMessage(friend, $event)">Send a message</button>
+            </mat-card-actions>
+        </mat-card>
+        <div *ngIf="friendList.length === 0" class="search-no-results">
+            <h3>No results</h3>
+        </div>
+    </div>
+</div>

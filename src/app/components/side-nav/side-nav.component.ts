@@ -26,6 +26,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
   showFriendRequestsComponent = false;
   showFriendRequestsComponentSub: Subscription;
 
+  showFriendListComponent = false;
+  showFriendListComponentSub: Subscription;
+
   constructor(
     public uiService: UiService,
     public accountService: AccountService,
@@ -62,6 +65,12 @@ export class SideNavComponent implements OnInit, OnDestroy {
       }
     );
     this.uiService.emitShowFriendRequestComponent();
+    this.showFriendListComponentSub = this.uiService.showFriendListComponent$.subscribe(
+      (next: boolean) => {
+        this.showFriendListComponent = next;
+      }
+    );
+    this.uiService.emitShowFriendListComponent();
   }
 
   ngOnDestroy(): void {
@@ -70,5 +79,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.authAccountSub.unsubscribe();
     this.showProfileEditComponentSub.unsubscribe();
     this.showFriendRequestsComponentSub.unsubscribe();
+    this.showFriendListComponentSub.unsubscribe();
   }
 }

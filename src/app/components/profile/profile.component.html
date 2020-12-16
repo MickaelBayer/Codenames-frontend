@@ -78,7 +78,8 @@
                             check</mat-icon>
                     </button>
                 </div>
-                <button mat-button color="primary" (click)="onFriends()">
+                <button mat-button color="primary" (click)="onFriends()"
+                    *ngIf="watchedProfile.is_self || watchedProfile.is_friend">
                     <mat-icon style="margin-right: 12px;">group</mat-icon>
                     Friends ({{ watchedProfile.friend_list.length }})
                 </button>
@@ -92,6 +93,8 @@
                 </button>
             </mat-card-content>
         </mat-card>
+        <button mat-stroked-button color="primary" class="profile-footer-btn" (click)="onSendMessage()"
+            *ngIf="watchedProfile.is_friend">Send a message</button>
 
     </div>
 </div>
