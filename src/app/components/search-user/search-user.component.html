@@ -1,0 +1,21 @@
+<div class="search-component-container">
+    <div class="search-input-container">
+        <mat-icon>search</mat-icon>
+        <mat-form-field class="search-input">
+            <input matInput placeholder="Search..." [(ngModel)]="query">
+        </mat-form-field>
+    </div>
+    <div class="card-container">
+        <mat-card *ngFor="let account of searchedAccounts" (click)="uiService.showProfile(account.id)">
+            <mat-card-content>
+                <img alt="profile_image" [src]="getProfileImage(account)" />
+                <div class="account-text">
+                    <h3 style="margin: 0;">{{account.username}}</h3>
+                </div>
+            </mat-card-content>
+        </mat-card>
+        <div *ngIf="searchedAccounts.length === 0" class="search-no-results">
+            <h3>No results</h3>
+        </div>
+    </div>
+</div>

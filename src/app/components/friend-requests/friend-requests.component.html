@@ -1,0 +1,41 @@
+<div class="search-component-container">
+    <div class="search-input-container">
+        <mat-icon>search</mat-icon>
+        <mat-form-field class="search-input">
+            <input matInput placeholder="Search..." [(ngModel)]="query">
+        </mat-form-field>
+    </div>
+    <div class="card-container">
+        <mat-card *ngFor="let friendRequest of friendRequests" (click)="uiService.showProfile(friendRequest.sender.id)">
+            <mat-card-content>
+                <div
+                    style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-right: 16px;">
+                    <img alt="profile_image" [src]="getProfileImage(friendRequest.sender)" />
+                    <div class="account-text">
+                        <h3 style="margin: 0;">{{friendRequest.sender.username}}</h3>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <button mat-mini-fab color="warn" aria-label="reject"
+                        (click)="onDeclineFriendRequest(friendRequest.id, $event)"
+                        style="height: 30px; width: 30px; margin: auto 0; position: relative; box-shadow: none;">
+                        <mat-icon
+                            style="font-size: 20px; height: 20px; width: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            close</mat-icon>
+                    </button>
+                    <span style="margin: auto 8px">Accept friend request ?</span>
+                    <button mat-mini-fab color="primary" aria-label="accept"
+                        (click)="onAcceptFriendRequest(friendRequest.id, $event)"
+                        style="height: 30px; width: 30px; margin: auto 0; position: relative; box-shadow: none;">
+                        <mat-icon
+                            style="font-size: 20px; height: 20px; width: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            check</mat-icon>
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+        <div *ngIf="friendRequests.length === 0" class="search-no-results">
+            <h3>No results</h3>
+        </div>
+    </div>
+</div>

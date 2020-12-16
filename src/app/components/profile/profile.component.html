@@ -1,0 +1,97 @@
+<!-- 1. is_self:
+    1. true: Tou looking to your own profile (**1**)
+    2. false: Move to next
+2 . is_friend:
+    1. true: this is your friend (**2**)
+    2. false: this is not your friend:
+        1. NO_REQUEST_SENT (**3**)
+        2. THEM_SENT_TO_YOU (**4**)
+        3. YOU_SENT_TO_THEM (**5**) -->
+<div class="card-container">
+    <div class="profile-card-conainer">
+        <mat-card *ngIf="watchedProfile">
+            <mat-card-header></mat-card-header>
+            <div class="image-container">
+                <img mat-card-image alt="profile_image" [src]="getProfileImage()" />
+            </div>
+            <mat-card-content>
+                <p class="profile-card-row">
+                    <span class="field-heading">Email</span>
+                    <span *ngIf="watchedProfile.is_self; else notIsSelf">
+                        <h4>{{watchedProfile?.email}}</h4>
+                    </span>
+                    <ng-template #notIsSelf>
+                        <span *ngIf="watchedProfile.hide_email; else showEmail">
+                            <h4>*****************</h4>
+                        </span>
+                        <ng-template #showEmail>
+                            <h4>{{watchedProfile?.email}}</h4>
+                        </ng-template>
+                    </ng-template>
+                </p>
+                <p class="profile-card-row">
+                    <span class="field-heading">Username</span>
+                    <span>
+                        <h4>{{watchedProfile?.username}}</h4>
+                    </span>
+                </p>
+            </mat-card-content>
+            <mat-card-footer>
+                <button mat-flat-button color="primary" class="profile-footer-btn" (click)="onEdit()"
+                    *ngIf="watchedProfile.is_self">Edit</button>
+                <button mat-button color="primary" class="profile-footer-btn" (click)="onChangePassword()"
+                    *ngIf="watchedProfile.is_self">Change password</button>
+            </mat-card-footer>
+        </mat-card>
+    </div>
+    <div class="small-card-container" *ngIf="watchedProfile">
+        <mat-card class="small-card">
+            <mat-card-content class="small-card-content">
+                <button mat-flat-button color="primary" style="margin-bottom: 8px;" [matMenuTriggerFor]="unfriend"
+                    *ngIf="!watchedProfile.is_self && watchedProfile.is_friend">
+                    Friends
+                </button>
+                <mat-menu #unfriend="matMenu" xPosition="after" yPosition="below">
+                    <button mat-menu-item (click)="onUnfriend()" style="color: #ff0000;">Unfriend</button>
+                </mat-menu>
+                <button mat-flat-button color="primary" style="margin-bottom: 8px;" (click)="onSendFriendRequest()"
+                    *ngIf="!watchedProfile.is_self && watchedProfile.request_sent === 0">
+                    Send friend request
+                </button>
+                <button mat-flat-button color="warn" style="margin-bottom: 8px;" (click)="onCancelFriendRequest()"
+                    *ngIf="!watchedProfile.is_self && watchedProfile.request_sent === 1">
+                    Cancel friend request
+                </button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;"
+                    *ngIf="!watchedProfile.is_self && watchedProfile.request_sent === -1">
+                    <button mat-mini-fab color="warn" aria-label="reject" (click)="onDeclineFriendRequest($event)"
+                        style="height: 30px; width: 30px; margin: auto 0; position: relative; box-shadow: none;">
+                        <mat-icon
+                            style="font-size: 20px; height: 20px; width: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            close</mat-icon>
+                    </button>
+                    <span style="margin: auto 8px">Accept friend request ?</span>
+                    <button mat-mini-fab color="primary" aria-label="accept" (click)="onAcceptFriendRequest($event)"
+                        style="height: 30px; width: 30px; margin: auto 0; position: relative; box-shadow: none;">
+                        <mat-icon
+                            style="font-size: 20px; height: 20px; width: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            check</mat-icon>
+                    </button>
+                </div>
+                <button mat-button color="primary" (click)="onFriends()">
+                    <mat-icon style="margin-right: 12px;">group</mat-icon>
+                    Friends ({{ watchedProfile.friend_list.length }})
+                </button>
+            </mat-card-content>
+        </mat-card>
+        <mat-card class="small-card" *ngIf="watchedProfile.is_self && watchedProfile.friend_requests.length > 0">
+            <mat-card-content class="small-card-content">
+                <button mat-button color="primary" (click)="onFriendRequest()">
+                    <mat-icon style="margin-right: 12px;">group_add</mat-icon>
+                    Friend request ({{ watchedProfile.friend_requests.length }})
+                </button>
+            </mat-card-content>
+        </mat-card>
+
+    </div>
+</div>

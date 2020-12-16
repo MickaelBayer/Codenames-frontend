@@ -1,0 +1,29 @@
+<!-- Toolbar -->
+<mat-toolbar color="primary">
+    <button mat-icon-button class="example-icon" aria-label="menu icon" (click)="toggleDrawer.emit()">
+        <mat-icon>menu</mat-icon>
+    </button>
+    <button mat-icon-button class="example-icon" aria-label="home" (click)="uiService.returnToHome()">
+        <mat-icon>home</mat-icon>
+    </button>
+    <span class="spacer"></span>
+    Codenames
+    <span class="spacer"></span>
+    <!-- <button mat-icon-button class="favorite-icon" aria-label="heart icon">
+        <mat-icon>favorite</mat-icon>
+    </button> -->
+    <button mat-button color="secondary" class="button-header" (click)="onlogin()"
+        *ngIf="accountService.isLoggedOut()">Login</button>
+    <button mat-stroked-button color="secondary" class="button-header" (click)="onRegister()"
+        *ngIf="accountService.isLoggedOut()">Register</button>
+    <button mat-icon-button class="favorite-icon" aria-label="heart icon" [matMenuTriggerFor]="AccountActions"
+        *ngIf="accountService.isLoggedIn() && authAccount">
+        <img alt="profile_image" [src]="getProfileImage()" class="profile-icon" />
+        <!-- <mat-icon>account_circle</mat-icon> -->
+        <!-- <img mat-card-image alt="profile_image" [src]="getProfileImage()" /> -->
+    </button>
+    <mat-menu #AccountActions="matMenu">
+        <button mat-menu-item (click)="uiService.showOwnProfile()">Account</button>
+        <button mat-menu-item (click)="onLogout()">Logout</button>
+    </mat-menu>
+</mat-toolbar>

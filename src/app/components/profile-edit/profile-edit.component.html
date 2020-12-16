@@ -1,0 +1,46 @@
+<div class="card-container">
+    <mat-card *ngIf="authAccount">
+        <mat-card-header></mat-card-header>
+        <div class="image-container" *ngIf="!imageSelected">
+            <img mat-card-image alt="profile_image" [src]="getProfileImage()" (click)="fileInput.click()" />
+            <button mat-flat-button color="primary" class="btn-image-edit">Edit</button>
+            <input style="display: none" type="file" (change)="fileChangeEvent($event)"
+                accept="image/x-png,image/gif,image/jpeg" #fileInput>
+        </div>
+        <div class="new-image-container" *ngIf="imageSelected">
+            <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="4 / 4"
+                [resizeToWidth]="256" format="png" (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()"
+                (cropperReady)="cropperReady()" (loadImageFailed)="loadImageFailed()"></image-cropper>
+        </div>
+        <mat-card-content>
+            <p class="profile-card-row">
+                <mat-form-field>
+                    <mat-label>Email</mat-label>
+                    <input matInput [(ngModel)]="authAccount.email" required>
+                    <mat-hint style="color: #ff0020;" role="alert">{{errorMsgs?.email}}</mat-hint>
+                </mat-form-field>
+            </p>
+            <p class="profile-card-row">
+                <mat-form-field>
+                    <mat-label>Username</mat-label>
+                    <input matInput [(ngModel)]="authAccount.username" required>
+                    <mat-hint style="color: #ff0020;" role="alert">{{errorMsgs?.username}}</mat-hint>
+                </mat-form-field>
+            </p>
+            <p class="profile-card-row">
+                <mat-checkbox class="example-margin" [(ngModel)]="authAccount.hide_email">Hide email</mat-checkbox>
+            </p>
+            <p>
+                <mat-hint role="alert">If you
+                    change your email, you will need to login with
+                    this new email.
+                </mat-hint>
+            </p>
+
+        </mat-card-content>
+        <mat-card-footer>
+            <button mat-button color="primary" class="profile-edit-footer-btn" (click)="onCancel()">Cancel</button>
+            <button mat-flat-button color="primary" class="profile-edit-footer-btn" (click)="onSave()">Save</button>
+        </mat-card-footer>
+    </mat-card>
+</div>

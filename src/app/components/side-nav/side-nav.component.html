@@ -1,0 +1,53 @@
+<mat-drawer-container class="drawer-container" hasBackdrop="true">
+    <mat-drawer #drawer mode="over">
+        <div class="drawer-menu-container">
+            <mat-toolbar color="primary">
+                <span>Menu</span>
+                <div class="spacer"></div>
+                <button mat-icon-button class="example-icon" aria-label="close icon" (click)="drawer.toggle()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-toolbar>
+            <div class="drawer-menu-item" (click)="drawer.toggle(); uiService.showHome()">
+                <mat-icon>home</mat-icon>
+                <h2 style="margin: 0 12px 0 0;">Home</h2>
+            </div>
+            <div class="drawer-menu-item" (click)="drawer.toggle(); uiService.showSearchUserComponent()"
+                *ngIf="accountService.isLoggedIn()">
+                <mat-icon>people</mat-icon>
+                <h2 style="margin: 0 12px 0 0;">Search users</h2>
+            </div>
+            <div class="spacer"></div>
+            <div *ngIf="accountService.isLoggedIn()" class="drawer-menu-item"
+                (click)="drawer.toggle(); uiService.showOwnProfile()">
+                <mat-icon>account_circle</mat-icon>
+                <h2 style="margin: 0 12px 0 0;">Account</h2>
+            </div>
+        </div>
+    </mat-drawer>
+    <mat-drawer-content>
+        <app-header (toggleDrawer)="drawer.toggle()"></app-header>
+        <div class="content" role="main">
+            <app-profile *ngIf="showProfileComponent"></app-profile>
+            <app-profile-edit *ngIf="showProfileEditComponent"></app-profile-edit>
+            <app-search-user *ngIf="showSearchUserComponent"></app-search-user>
+            <app-friend-requests *ngIf="showFriendRequestsComponent"></app-friend-requests>
+        </div>
+        <!-- <mat-form-field>
+            <mat-label>Sidenav mode</mat-label>
+            <mat-select #mode value="side">
+                <mat-option value="side">Side</mat-option>
+                <mat-option value="over">Over</mat-option>
+                <mat-option value="push">Push</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Has backdrop</mat-label>
+            <mat-select #hasBackdrop>
+                <mat-option>Unset</mat-option>
+                <mat-option [value]="true">True</mat-option>
+                <mat-option [value]="false">False</mat-option>
+            </mat-select>
+        </mat-form-field> -->
+    </mat-drawer-content>
+</mat-drawer-container>

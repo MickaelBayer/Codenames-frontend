@@ -1,0 +1,29 @@
+<h1 mat-dialog-title style="text-align: center">Register</h1>
+<div mat-dialog-content class="dialog-content">
+    <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="data.email" required>
+        <mat-hint style="color: #ff0020;" role="alert">{{errorMsgs?.email}}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="data.username" required>
+        <mat-hint style="color: #ff0020;" role="alert">{{errorMsgs?.username}}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput [(ngModel)]="data.password" type="password" required>
+        <mat-hint style="color: #ff0020;" role="alert">{{errorMsgs?.password}}</mat-hint>
+    </mat-form-field>
+    <!-- <mat-form-field>
+        <mat-label>Confirm password</mat-label>
+        <input matInput [(ngModel)]="data.password2" type="password" required>
+    </mat-form-field> -->
+</div>
+<div mat-dialog-actions>
+    <div style="margin: auto">
+        <button mat-button (click)="onNoClick()">No Thanks</button>
+        <!-- <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button> -->
+        <button mat-button (click)="onRegisterClick()" cdkFocusInitial>Register</button>
+    </div>
+</div>
