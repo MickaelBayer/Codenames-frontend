@@ -1,0 +1,10 @@
+<div class="new-message">
+    <img class="profile-image" [src]="getProfileImage()" alt="profile-image" (click)="goToProfile()">
+    <div class="div1">
+        <div class="div2">
+            <span class="username-span" (click)="goToProfile()">{{username}}&nbsp;</span>
+            <span class="timestamp-span">{{timestamp}}</span>
+        </div>
+        <p class="message-p">{{message}}</p>
+    </div>
+</div>

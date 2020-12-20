@@ -12,8 +12,8 @@
                 <div class="account-text">
                     <h3 style="margin: 0;">{{friend.username}}</h3>
                 </div>
-                <div class="spacer"></div>
-                <mat-chip-list style="margin-left: 20px; cursor: pointer;">
+                <div class="spacer" *ngIf="authAccount.id !== watchedProfile.id"></div>
+                <mat-chip-list style="margin-left: 20px; cursor: pointer;" *ngIf="authAccount.id !== watchedProfile.id">
                     <mat-chip color="primary" selected *ngIf="friend.is_friend" class="account-chip">Friends
                     </mat-chip>
                     <mat-chip color="accent" selected *ngIf="!friend.is_friend && !friend.is_self" class="account-chip">

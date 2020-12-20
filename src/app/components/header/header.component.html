@@ -1,9 +1,9 @@
 <!-- Toolbar -->
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" #header>
     <button mat-icon-button class="example-icon" aria-label="menu icon" (click)="toggleDrawer.emit()">
         <mat-icon>menu</mat-icon>
     </button>
-    <button mat-icon-button class="example-icon" aria-label="home" (click)="uiService.returnToHome()">
+    <button mat-icon-button class="example-icon" aria-label="home" (click)="uiService.showHome()">
         <mat-icon>home</mat-icon>
     </button>
     <span class="spacer"></span>

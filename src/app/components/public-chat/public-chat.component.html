@@ -1,0 +1,22 @@
+<mat-card>
+    <mat-card-content>
+        <div class="chat-log" #publicChatScrollContainer>
+            <div class="spacer"></div>
+            <ng-template #publicChatLog class="chat-log">
+            </ng-template>
+        </div>
+        <div style="display: flex; flex-direction: row; flex: 1;">
+            <mat-form-field style="width: 100%; padding: 0;" id="publicChatFormField">
+                <textarea matInput cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5" cdkTextareaAutosize
+                    class="chat-message-input" [(ngModel)]="message" (keyup.enter)="onSendMessage()" #messageInput
+                    autofocus></textarea>
+                <mat-hint style="color: #ff0020;" role="alert" *ngIf="noMessageError">{{noMessageError}}</mat-hint>
+
+
+            </mat-form-field>
+            <!-- <button mat-flat-button color="primary" title="Send" (click)="onSendMessage()" class="send-btn">
+                <mat-icon>send</mat-icon>
+            </button> -->
+        </div>
+    </mat-card-content>
+</mat-card>

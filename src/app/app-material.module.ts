@@ -15,6 +15,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { MatChipsModule } from '@angular/material/chips';
         MatDividerModule,
         MatCheckboxModule,
         MatChipsModule,
+        MatSlideToggleModule,
     ],
     exports: [
         MatButtonModule,
@@ -53,6 +55,7 @@ import { MatChipsModule } from '@angular/material/chips';
         MatDividerModule,
         MatCheckboxModule,
         MatChipsModule,
+        MatSlideToggleModule,
     ]
 })
 export class AppMaterialModule { }

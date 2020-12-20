@@ -6,7 +6,6 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
         let cloned: HttpRequest<any>;
         const token = localStorage.getItem('token');
         if (token) {

@@ -15,6 +15,12 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
   friendList: Account[] = [];
   friendListSub: Subscription;
 
+  authAccount: Account;
+  authAccountSub: Subscription;
+
+  watchedProfile: Account;
+  watchedProfileSub: Subscription;
+
   query = '';
 
   differ: KeyValueDiffer<string, any>;
@@ -32,6 +38,18 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
       }
     );
     this.accountService.emitFriendList();
+    this.watchedProfileSub = this.accountService.watchedProfile$.subscribe(
+      (next: Account) => {
+        this.watchedProfile = next;
+      }
+    );
+    this.accountService.emitWatchedProfile();
+    this.authAccountSub = this.accountService.authAccount$.subscribe(
+      (next: Account) => {
+        this.authAccount = next;
+      }
+    );
+    this.accountService.emitAuthAccount();
     this.differ = this.differs.find(this).create();
   }
 
@@ -64,6 +82,8 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
 
   ngOnDestroy(): void {
     this.friendListSub.unsubscribe();
+    this.watchedProfileSub.unsubscribe();
+    this.authAccountSub.unsubscribe();
   }
 
 }

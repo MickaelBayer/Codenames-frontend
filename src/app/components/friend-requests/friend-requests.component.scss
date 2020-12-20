@@ -30,14 +30,13 @@
 .card-container {
     display: flex;
     flex-direction: row;
-    max-width: 550px;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
 .card-container mat-card {
     flex-grow: 1;
-    margin: 8px 8px 0 0;
+    margin: 4px 4px;
 }
 
 .card-container mat-card:hover {

@@ -31,7 +31,15 @@ export class AccountService {
 
   constructor(
     private httpClient: HttpClient
-  ) { }
+  ) {
+    // set the cookie for the sockets authentification if a session is stored in the local storage
+    try {
+      document.cookie = 'authorization=bearer ' + localStorage.getItem('token') + ';'
+        + localStorage.getItem('expires_at') + ';path=/';
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   register(unRegistredAccount: UnRegistredAccount): Promise<void> {
     return new Promise(
@@ -78,6 +86,9 @@ export class AccountService {
     const expiresAt = moment.unix(payload['exp'] as number);
     localStorage.setItem('token', json.token);
     localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
+    // set this in a coockie for websocket authentification
+    document.cookie = 'authorization=bearer ' + localStorage.getItem('token') + ';'
+      + localStorage.getItem('expires_at') + ';path=/';
     this.viewOnwProfile();
   }
 

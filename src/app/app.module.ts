@@ -14,13 +14,14 @@ import { LoginDialogComponent } from './components/header/login-dialog/login-dia
 import { ProfileComponent } from './components/profile/profile.component';
 import { AccountService } from './services/account.service';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
-import { ThemeSwitchComponent } from './components/theme-switch/theme-switch.component';
 import { UiService } from './services/ui.service';
 import { SearchUserComponent } from './components/search-user/search-user.component';
 import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { FriendRequestsComponent } from './components/friend-requests/friend-requests.component';
 import { FriendListComponent } from './components/friend-list/friend-list.component';
+import { PublicChatComponent } from './components/public-chat/public-chat.component';
+import { PublicChatMessageComponent } from './components/public-chat/public-chat-message/public-chat-message.component';
 
 @NgModule({
   declarations: [
@@ -30,11 +31,12 @@ import { FriendListComponent } from './components/friend-list/friend-list.compon
     LoginDialogComponent,
     ProfileComponent,
     SideNavComponent,
-    ThemeSwitchComponent,
     SearchUserComponent,
     ProfileEditComponent,
     FriendRequestsComponent,
-    FriendListComponent
+    FriendListComponent,
+    PublicChatComponent,
+    PublicChatMessageComponent
   ],
   imports: [
     AppMaterialModule,

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ThemeSwitchComponent } from './theme-switch.component';
+import { PublicChatComponent } from './public-chat.component';
 
-describe('ThemeSwitchComponent', () => {
-  let component: ThemeSwitchComponent;
-  let fixture: ComponentFixture<ThemeSwitchComponent>;
+describe('PublicChatComponent', () => {
+  let component: PublicChatComponent;
+  let fixture: ComponentFixture<PublicChatComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ThemeSwitchComponent ]
+      declarations: [ PublicChatComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ThemeSwitchComponent);
+    fixture = TestBed.createComponent(PublicChatComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

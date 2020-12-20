@@ -11,6 +11,8 @@ import { UiService } from 'src/app/services/ui.service';
 })
 export class SideNavComponent implements OnInit, OnDestroy {
 
+  lightTheme = false;
+
   authAccount: Account;
   authAccountSub: Subscription;
 
@@ -29,12 +31,16 @@ export class SideNavComponent implements OnInit, OnDestroy {
   showFriendListComponent = false;
   showFriendListComponentSub: Subscription;
 
+  showPublicChatComponent = false;
+  showPublicChatComponentSub: Subscription;
+
   constructor(
     public uiService: UiService,
     public accountService: AccountService,
   ) { }
 
   ngOnInit(): void {
+    this.lightTheme = localStorage.getItem('theme') === 'Light' ? true : false;
     this.authAccountSub = this.accountService.authAccount$.subscribe(
       (next: Account) => {
         this.authAccount = next;
@@ -71,6 +77,16 @@ export class SideNavComponent implements OnInit, OnDestroy {
       }
     );
     this.uiService.emitShowFriendListComponent();
+    this.showPublicChatComponentSub = this.uiService.showPublicChatComponent$.subscribe(
+      (next: boolean) => {
+        this.showPublicChatComponent = next;
+      }
+    );
+    this.uiService.emitShowPublicChatComponent();
+  }
+
+  storeTheme(): void {
+    localStorage.setItem('theme', this.lightTheme ? 'Light' : 'Dark');
   }
 
   ngOnDestroy(): void {
@@ -80,5 +96,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.showProfileEditComponentSub.unsubscribe();
     this.showFriendRequestsComponentSub.unsubscribe();
     this.showFriendListComponentSub.unsubscribe();
+    this.showPublicChatComponentSub.unsubscribe();
   }
 }

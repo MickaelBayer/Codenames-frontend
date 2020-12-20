@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   baseURL: 'http://localhost:8000',
   apiURL: '/api/',
+  wsPort: '8000'
 };
 
 /*

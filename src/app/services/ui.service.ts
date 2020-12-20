@@ -23,6 +23,9 @@ export class UiService {
   showFriendListComponent = false;
   showFriendListComponent$ = new Subject<boolean>();
 
+  showPublicChatComponent = false;
+  showPublicChatComponent$ = new Subject<boolean>();
+
   authAccount: Account;
   authAccoutSub: Subscription;
 
@@ -34,15 +37,18 @@ export class UiService {
       (next: Account) => {
         this.authAccount = next;
         if (next === undefined) {
-          this.returnToHome();
+          this.showHome();
         }
       }
     );
     this.accountService.emitAuthAccount();
+    this.showHome();
   }
 
   showHome(): void {
-    this.returnToHome();
+    this.hideAllComponents();
+    this.showPublicChatComponent = true;
+    this.emitShowPublicChatComponent();
   }
 
   showOwnProfile(): void {
@@ -92,6 +98,12 @@ export class UiService {
     this.emitShowFriendListComponent();
   }
 
+  showPublicChat(): void {
+    this.hideAllComponents();
+    this.showPublicChatComponent = true;
+    this.emitShowPublicChatComponent();
+  }
+
   returnToHome(): void {
     this.hideAllComponents();
   }
@@ -107,6 +119,8 @@ export class UiService {
     this.emitShowFriendRequestComponent();
     this.showFriendListComponent = false;
     this.emitShowFriendListComponent();
+    this.showPublicChatComponent = false;
+    this.emitShowPublicChatComponent();
   }
 
   emitShowProfileComponent(): void {
@@ -132,6 +146,10 @@ export class UiService {
 
   emitShowFriendListComponent(): void {
     this.showFriendListComponent$.next(this.showFriendListComponent);
+  }
+
+  emitShowPublicChatComponent(): void {
+    this.showPublicChatComponent$.next(this.showPublicChatComponent);
   }
 
 }
