@@ -6,7 +6,7 @@ import { SignInDialogComponent } from './sign-in-dialog/sign-in-dialog.component
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { AccountService } from 'src/app/services/account.service';
 import { environment } from '../../../environments/environment';
-import { UiService } from 'src/app/services/ui.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -25,11 +25,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     public accountService: AccountService,
-    public uiService: UiService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.accountService.viewOnwProfile();
+    this.accountService.fetchOnwProfile();
     this.authAccountSub = this.accountService.authAccount$.subscribe(
       (value: Account) => {
         this.authAccount = value;
@@ -57,13 +57,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.email && result.password) {
-        this.accountService.login(result);
+        this.accountService.login(result).then(
+          () => {
+            this.router.navigate(['home']);
+          },
+          (error) => { }
+        );
       }
     });
   }
 
   onLogout(): void {
-    this.accountService.logout();
+    this.accountService.logout().then(
+      () => {
+        this.router.navigate(['home']);
+      },
+      (error) => { }
+    );
+  }
+
+  onAccount(): void {
+    this.accountService.fetchOnwProfile().then(
+      () => {
+        this.router.navigate(['/account', this.authAccount.id]);
+      },
+      (error) => { }
+    );
   }
 
   getProfileImage(): string {

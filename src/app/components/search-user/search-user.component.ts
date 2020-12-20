@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, DoCheck, KeyValueDiffers, KeyValueDiffer } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/models/account.model';
 import { AccountService } from 'src/app/services/account.service';
@@ -15,6 +16,9 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
   searchedAccounts: Account[] = [];
   searchedAccountsSub: Subscription;
 
+  watchedProfile: Account;
+  watchedProfileSub: Subscription;
+
   query = '';
 
   differ: KeyValueDiffer<string, any>;
@@ -23,6 +27,7 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
     public accountService: AccountService,
     public uiService: UiService,
     private differs: KeyValueDiffers,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -32,6 +37,12 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
       }
     );
     this.accountService.emitSearchedAccounts();
+    this.watchedProfileSub = this.accountService.watchedProfile$.subscribe(
+      (next: Account) => {
+        this.watchedProfile = next;
+      }
+    );
+    this.accountService.emitWatchedProfile();
     this.differ = this.differs.find(this).create();
   }
 
@@ -52,12 +63,17 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
-  searchProfile(inputValue: string): void {
-    console.log(inputValue);
-  }
-
   getProfileImage(profile: Account): string {
     return environment.baseURL + profile.profile_image;
+  }
+
+  onAccountCard(accountId: number): void {
+    this.accountService.fetchProfile(accountId).then(
+      () => {
+        this.router.navigate(['account', this.watchedProfile.id]);
+      },
+      (error) => { }
+    );
   }
 
   onSendMessage(account: Account, event: MouseEvent): void {
@@ -67,6 +83,7 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
 
   ngOnDestroy(): void {
     this.searchedAccountsSub.unsubscribe();
+    this.watchedProfileSub.unsubscribe();
   }
 
 }

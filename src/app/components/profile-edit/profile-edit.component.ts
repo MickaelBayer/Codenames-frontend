@@ -5,6 +5,8 @@ import { AccountService } from 'src/app/services/account.service';
 import { UiService } from 'src/app/services/ui.service';
 import { environment } from '../../../environments/environment';
 import { ImageCroppedEvent, base64ToFile } from 'ngx-image-cropper';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 
 @Component({
@@ -28,6 +30,8 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
   constructor(
     public accountService: AccountService,
     public uiService: UiService,
+    private router: Router,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -51,14 +55,14 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
 
   onCancel(): void {
     this.accountService.clearErrorMsgs();
-    this.uiService.showOwnProfile();
+    this.location.back();
   }
 
   onSave(): void {
     this.accountService.clearErrorMsgs();
     this.accountService.updateAccount(this.authAccount, this.file).then(
       () => {
-        this.uiService.showOwnProfile();
+        this.location.back();
       },
       (error) => { }
     );

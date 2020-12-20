@@ -89,7 +89,7 @@ export class AccountService {
     // set this in a coockie for websocket authentification
     document.cookie = 'authorization=bearer ' + localStorage.getItem('token') + ';'
       + localStorage.getItem('expires_at') + ';path=/';
-    this.viewOnwProfile();
+    this.fetchOnwProfile();
   }
 
   getExpiration(): moment.Moment {
@@ -112,7 +112,10 @@ export class AccountService {
     formData.append('email', account.email);
     formData.append('username', account.username);
     formData.append('hide_email', JSON.stringify(account.hide_email));
-    formData.append('profile_image', image);
+    if (image) {
+      formData.append('profile_image', image);
+    }
+
     return new Promise(
       (resolve, reject) => {
         this.httpClient.post('account/edit/', formData).subscribe(
@@ -131,28 +134,35 @@ export class AccountService {
     );
   }
 
-  viewOnwProfile(): void {
-    this.httpClient.get('account/profile/').subscribe(
-      (response: string) => {
-        this.watchedProfile = JSON.parse(response).data;
-        this.emitWatchedProfile();
-        this.authAccount = JSON.parse(response).data;
-        this.emitAuthAccount();
-      },
-      (error) => {
-        if (error.status === 401 && error.error.detail === 'Invalid signature.') {
-          localStorage.removeItem('token');
-          localStorage.removeItem('expires_at');
-          this.authAccount = undefined;
-          this.emitAuthAccount();
-          this.watchedProfile = undefined;
-          this.emitWatchedProfile();
-        }
+  fetchOnwProfile(): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        this.httpClient.get('account/profile/').subscribe(
+          (response: string) => {
+            this.watchedProfile = JSON.parse(response).data;
+            this.emitWatchedProfile();
+            this.authAccount = JSON.parse(response).data;
+            this.emitAuthAccount();
+            resolve();
+          },
+          (error) => {
+            if (error.status === 401 && error.error.detail === 'Invalid signature.') {
+              localStorage.removeItem('token');
+              localStorage.removeItem('expires_at');
+              this.authAccount = undefined;
+              this.emitAuthAccount();
+              this.watchedProfile = undefined;
+              this.emitWatchedProfile();
+              reject(error);
+            }
+          }
+        );
       }
     );
+
   }
 
-  viewProfile(profileId: number): Promise<void> {
+  fetchProfile(profileId: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
         this.httpClient.get('account/' + profileId).subscribe(
@@ -169,17 +179,24 @@ export class AccountService {
     );
   }
 
-  logout(): void {
-    this.httpClient.get('account/logout/').subscribe(
-      () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('expires_at');
-        this.authAccount = undefined;
-        this.emitAuthAccount();
-        this.watchedProfile = undefined;
-        this.emitWatchedProfile();
-      },
-      (error) => { }
+  logout(): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        this.httpClient.get('account/logout/').subscribe(
+          () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('expires_at');
+            this.authAccount = undefined;
+            this.emitAuthAccount();
+            this.watchedProfile = undefined;
+            this.emitWatchedProfile();
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      }
     );
   }
 
@@ -251,7 +268,7 @@ export class AccountService {
       (resolve, reject) => {
         this.httpClient.post('friend/friend-request/', { reciever_id }).subscribe(
           (response: string) => {
-            this.viewProfile(reciever_id);
+            this.fetchProfile(reciever_id);
             resolve();
           },
           (error) => {
@@ -262,20 +279,28 @@ export class AccountService {
     );
   }
 
-  retrieveFriendRequests(): void {
-    this.httpClient.get('friend/friend-request/' + this.authAccount.id + '/').subscribe(
-      (response: string) => {
-        this.friendRequests = JSON.parse(response).friend_requests;
-        this.emitFriendRequests();
+  fetchFriendRequests(accountId: number): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        this.httpClient.get('friend/friend-request/' + accountId + '/').subscribe(
+          (response: string) => {
+            this.friendRequests = JSON.parse(response).friend_requests;
+            this.emitFriendRequests();
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
       }
     );
   }
 
-  retrieveFriendRequestsWithSearch(query: string): Promise<void> {
+  fetchFriendRequestsWithSearch(accountId: number, query: string): Promise<void> {
     return new Promise(
       (resolve, reject) => {
         const params = new HttpParams().set('q', query);
-        this.httpClient.get('friend/friend-request/' + this.authAccount.id + '/', { params }).subscribe(
+        this.httpClient.get('friend/friend-request/' + accountId + '/', { params }).subscribe(
           (response: string) => {
             this.friendRequests = JSON.parse(response).friend_requests;
             this.emitFriendRequests();
@@ -306,20 +331,20 @@ export class AccountService {
   }
 
   // tslint:disable-next-line: variable-name
-  removeFriend(): void {
-    this.httpClient.post('friend/friend-remove/', { reciever_user_id: this.watchedProfile.id }).subscribe(
+  removeFriend(accountId: number): void {
+    this.httpClient.post('friend/friend-remove/', { reciever_user_id: accountId }).subscribe(
       (response: string) => {
-        this.viewProfile(this.watchedProfile.id);
+        this.fetchProfile(this.watchedProfile.id);
       },
       (error) => { }
     );
   }
 
   // tslint:disable-next-line: variable-name
-  declineFriendRequest(friend_request_id: number): Promise<void> {
+  declineFriendRequest(friendRequestId: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.get('friend/friend-decline/' + friend_request_id + '/').subscribe(
+        this.httpClient.get('friend/friend-decline/' + friendRequestId + '/').subscribe(
           (response: string) => {
             resolve();
           },
@@ -331,10 +356,10 @@ export class AccountService {
     );
   }
 
-  cancelFriendRequest(): Promise<void> {
+  cancelFriendRequest(accountId: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.post('friend/friend-cancel/', { reciever_id: this.watchedProfile.id }).subscribe(
+        this.httpClient.post('friend/friend-cancel/', { reciever_id: accountId }).subscribe(
           (response: string) => {
             resolve();
           },
@@ -346,8 +371,8 @@ export class AccountService {
     );
   }
 
-  getFriendList(): void {
-    this.httpClient.get('friend/list/' + this.watchedProfile.id + '/').subscribe(
+  getFriendList(accountId: number): void {
+    this.httpClient.get('friend/list/' + accountId + '/').subscribe(
       (response: string) => {
         this.friendList = JSON.parse(response).friends;
         this.emitFriendList();
@@ -356,9 +381,9 @@ export class AccountService {
     );
   }
 
-  getFriendListWithSearch(query: string): void {
+  getFriendListWithSearch(accountId: number, query: string): void {
     const params = new HttpParams().set('q', query);
-    this.httpClient.get('friend/list/' + this.watchedProfile.id + '/', { params }).subscribe(
+    this.httpClient.get('friend/list/' + accountId + '/', { params }).subscribe(
       (response: string) => {
         this.friendList = JSON.parse(response).friends;
         this.emitFriendList();

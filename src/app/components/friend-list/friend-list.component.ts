@@ -4,6 +4,7 @@ import { AccountService } from 'src/app/services/account.service';
 import { Account } from '../../models/account.model';
 import { environment } from '../../../environments/environment';
 import { UiService } from 'src/app/services/ui.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-friend-list',
@@ -29,6 +30,7 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
     public accountService: AccountService,
     public uiService: UiService,
     private differs: KeyValueDiffers,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -61,9 +63,9 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
           if (item.key === 'query') {
             console.log(this.query);
             if (item.currentValue === '') {
-              this.accountService.getFriendList();
+              this.accountService.getFriendList(this.watchedProfile.id);
             } else {
-              this.accountService.getFriendListWithSearch(item.currentValue);
+              this.accountService.getFriendListWithSearch(this.watchedProfile.id, item.currentValue);
             }
           }
         });
@@ -73,6 +75,14 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
 
   getProfileImage(profile: Account): string {
     return environment.baseURL + profile.profile_image;
+  }
+
+  onFriendCard(friendId: number): void {
+    this.accountService.fetchProfile(friendId).then(
+      () => {
+        this.router.navigate(['account', friendId]);
+      }
+    );
   }
 
   onSendMessage(friend: Account, event: MouseEvent): void {

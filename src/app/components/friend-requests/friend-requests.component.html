@@ -6,7 +6,7 @@
         </mat-form-field>
     </div>
     <div class="card-container">
-        <mat-card *ngFor="let friendRequest of friendRequests" (click)="uiService.showProfile(friendRequest.sender.id)">
+        <mat-card *ngFor="let friendRequest of friendRequests" (click)="onProfileCard(friendRequest)">
             <mat-card-content>
                 <div
                     style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-right: 16px;">

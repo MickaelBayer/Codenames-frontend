@@ -6,7 +6,7 @@
         </mat-form-field>
     </div>
     <div class="card-container">
-        <mat-card *ngFor="let account of searchedAccounts" (click)="uiService.showProfile(account.id)">
+        <mat-card *ngFor="let account of searchedAccounts" (click)="onAccountCard(account.id)">
             <mat-card-content>
                 <img alt="profile_image" [src]="getProfileImage(account)" />
                 <div class="account-text">

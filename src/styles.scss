@@ -6,6 +6,22 @@
 html, body { height: 100vh; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+app-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+app-profile {
+    max-height: 100%;
+}
+
+app-public-chat {
+    max-height: 100%;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
 
 #publicChatFormField .mat-form-field-underline{
     display: none !important;

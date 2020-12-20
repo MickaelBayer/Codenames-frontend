@@ -9,18 +9,16 @@
                     <mat-icon>close</mat-icon>
                 </button>
             </mat-toolbar>
-            <div class="drawer-menu-item" (click)="drawer.toggle(); uiService.showHome()">
+            <div class="drawer-menu-item" (click)="drawer.toggle(); onHome()">
                 <mat-icon>home</mat-icon>
                 <h2 style="margin: 0 12px 0 0;">Home</h2>
             </div>
-            <div class="drawer-menu-item" (click)="drawer.toggle(); uiService.showSearchUserComponent()"
-                *ngIf="accountService.isLoggedIn()">
+            <div class="drawer-menu-item" (click)="drawer.toggle(); onSearchUser()" *ngIf="accountService.isLoggedIn()">
                 <mat-icon>people</mat-icon>
                 <h2 style="margin: 0 12px 0 0;">Search users</h2>
             </div>
             <div class="spacer"></div>
-            <div *ngIf="accountService.isLoggedIn()" class="drawer-menu-item"
-                (click)="drawer.toggle(); uiService.showOwnProfile()">
+            <div *ngIf="accountService.isLoggedIn()" class="drawer-menu-item" (click)="drawer.toggle(); onAccount()">
                 <mat-icon>account_circle</mat-icon>
                 <h2 style="margin: 0 12px 0 0;">Account</h2>
             </div>
@@ -38,12 +36,7 @@
     <mat-drawer-content>
         <app-header (toggleDrawer)="drawer.toggle()"></app-header>
         <div class="content" role="main">
-            <app-public-chat *ngIf="showPublicChatComponent"></app-public-chat>
-            <app-profile *ngIf="showProfileComponent"></app-profile>
-            <app-profile-edit *ngIf="showProfileEditComponent"></app-profile-edit>
-            <app-search-user *ngIf="showSearchUserComponent"></app-search-user>
-            <app-friend-requests *ngIf="showFriendRequestsComponent"></app-friend-requests>
-            <app-friend-list *ngIf="showFriendListComponent"></app-friend-list>
+            <router-outlet></router-outlet>
         </div>
     </mat-drawer-content>
 </mat-drawer-container>

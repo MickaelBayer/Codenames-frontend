@@ -46,7 +46,7 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
   ) { }
 
   ngOnInit(): void {
-    this.accountService.viewOnwProfile();
+    this.accountService.fetchOnwProfile();
     this.authAccountSub = this.accountService.authAccount$.subscribe(
       (value: Account) => {
         const oldAuthAccount = this.authAccount;

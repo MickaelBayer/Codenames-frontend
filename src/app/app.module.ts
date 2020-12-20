@@ -22,6 +22,8 @@ import { FriendRequestsComponent } from './components/friend-requests/friend-req
 import { FriendListComponent } from './components/friend-list/friend-list.component';
 import { PublicChatComponent } from './components/public-chat/public-chat.component';
 import { PublicChatMessageComponent } from './components/public-chat/public-chat-message/public-chat-message.component';
+import { AppRoutingModule } from './app-routing.module';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { PublicChatMessageComponent } from './components/public-chat/public-chat
     FriendRequestsComponent,
     FriendListComponent,
     PublicChatComponent,
-    PublicChatMessageComponent
+    PublicChatMessageComponent,
+    PageNotFoundComponent
   ],
   imports: [
     AppMaterialModule,
@@ -45,7 +48,8 @@ import { PublicChatMessageComponent } from './components/public-chat/public-chat
     FormsModule,
     HttpClientModule,
     ImageCropperModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    AppRoutingModule
   ],
   providers: [
     AccountService,

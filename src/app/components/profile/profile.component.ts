@@ -5,6 +5,7 @@ import { AccountService } from '../../services/account.service';
 import { environment } from '../../../environments/environment';
 import { UiService } from 'src/app/services/ui.service';
 import { FriendRequest } from 'src/app/models/friend-request.model';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -16,12 +17,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
   watchedProfile: Account;
   watchedProfileSub: Subscription;
 
+  authAccount: Account;
+  authAccountSub: Subscription;
+
   friendRequests: FriendRequest[] = [];
   friendRequestsSub: Subscription;
 
+  accountIdSub: Subscription;
+
   constructor(
     private accountService: AccountService,
-    private uiService: UiService
+    private uiService: UiService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -31,6 +39,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }
     );
     this.accountService.emitWatchedProfile();
+    this.authAccountSub = this.accountService.authAccount$.subscribe(
+      (account: Account) => {
+        this.authAccount = account;
+      }
+    );
+    this.accountService.emitAuthAccount();
+
+    this.accountIdSub = this.route.paramMap.subscribe(
+      (params: ParamMap) => {
+        if (params.has('id')) {
+          this.accountService.fetchProfile(params.get('id') as any as number);
+
+        } else {
+          this.accountService.fetchOnwProfile();
+        }
+      }
+    );
+
     this.friendRequestsSub = this.accountService.friendRequests$.subscribe(
       (next: FriendRequest[]) => {
         this.friendRequests = next;
@@ -44,17 +70,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onFriends(): void {
-    this.accountService.getFriendList();
-    this.uiService.showFriendList();
+    this.accountService.getFriendList(this.watchedProfile.id);
+    this.router.navigate(['account', this.watchedProfile.id, 'friends-list']);
   }
 
   onFriendRequest(): void {
     if (this.watchedProfile.friend_requests.length === 1) {
+      // if the profile we are looking has only 1 friend request,
+      // we go straight to the profile of the requester
       // tslint:disable-next-line: no-string-literal
-      this.accountService.viewProfile(this.watchedProfile.friend_requests[0]['sender']);
+      this.accountService.fetchProfile(this.watchedProfile.friend_requests[0]['sender']);
     } else {
-      this.accountService.retrieveFriendRequests();
-      this.uiService.showFriendRequests();
+      // else we go to the list
+      this.accountService.fetchFriendRequests(this.watchedProfile.id);
+      this.router.navigate(['account', this.watchedProfile.id, 'friends-requests']);
     }
   }
 
@@ -66,27 +95,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
          * TODO:
          * Toast to tell the user that this friend request has been cancelled
          */
-        this.accountService.viewProfile(this.watchedProfile.id);
+        this.accountService.fetchProfile(this.watchedProfile.id);
       }
     );
   }
 
   onCancelFriendRequest(): void {
-    this.accountService.cancelFriendRequest().then(
+    this.accountService.cancelFriendRequest(this.watchedProfile.id).then(
       () => {
-        this.accountService.viewProfile(this.watchedProfile.id);
+        this.accountService.fetchProfile(this.watchedProfile.id);
       },
       (error) => { }
     );
   }
 
   onDeclineFriendRequest(): void {
-    this.accountService.retrieveFriendRequestsWithSearch(this.watchedProfile.email).then(
+    this.accountService.fetchFriendRequestsWithSearch(this.authAccount.id, this.watchedProfile.email).then(
       () => {
         if (this.friendRequests.length !== 0) {
-          this.accountService.declineFriendRequest(this.accountService.friendRequests[0].id).then(
+          this.accountService.declineFriendRequest(this.friendRequests[0].id).then(
             () => {
-              this.accountService.viewProfile(this.watchedProfile.id);
+              this.accountService.fetchProfile(this.watchedProfile.id);
             },
             (reject) => { }
           );
@@ -95,7 +124,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
            * TODO:
            * Toast to tell the user that this friend request has been cancelled
            */
-          this.accountService.viewProfile(this.watchedProfile.id);
+          this.accountService.fetchProfile(this.watchedProfile.id);
         }
       },
       () => { }
@@ -103,12 +132,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onAcceptFriendRequest(): void {
-    this.accountService.retrieveFriendRequestsWithSearch(this.watchedProfile.email).then(
+    this.accountService.fetchFriendRequestsWithSearch(this.authAccount.id, this.watchedProfile.email).then(
       () => {
         if (this.friendRequests.length !== 0) {
-          this.accountService.acceptFriendRequest(this.accountService.friendRequests[0].id).then(
+          this.accountService.acceptFriendRequest(this.friendRequests[0].id).then(
             () => {
-              this.accountService.viewProfile(this.watchedProfile.id);
+              this.accountService.fetchProfile(this.watchedProfile.id);
             },
             (reject) => { }
           );
@@ -117,7 +146,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
            * TODO:
            * Toast to tell the user that this friend request has been cancelled
            */
-          this.accountService.viewProfile(this.watchedProfile.id);
+          this.accountService.fetchProfile(this.watchedProfile.id);
         }
       },
       () => { }
@@ -133,16 +162,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onEdit(): void {
-    this.uiService.showProfileEdit();
+    this.router.navigate(['/account', 'edit']);
   }
 
   onUnfriend(): void {
-    this.accountService.removeFriend();
+    this.accountService.removeFriend(this.watchedProfile.id);
   }
 
   ngOnDestroy(): void {
     this.watchedProfileSub.unsubscribe();
+    this.authAccountSub.unsubscribe();
     this.friendRequestsSub.unsubscribe();
+    this.accountIdSub.unsubscribe();
   }
 
 }

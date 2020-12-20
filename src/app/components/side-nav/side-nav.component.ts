@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/models/account.model';
 import { AccountService } from 'src/app/services/account.service';
@@ -16,27 +17,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
   authAccount: Account;
   authAccountSub: Subscription;
 
-  showProfileComponent = false;
-  showProfileComponentSub: Subscription;
-
-  showProfileEditComponent = false;
-  showProfileEditComponentSub: Subscription;
-
-  showSearchUserComponent = false;
-  showSearchUserComponentSub: Subscription;
-
-  showFriendRequestsComponent = false;
-  showFriendRequestsComponentSub: Subscription;
-
-  showFriendListComponent = false;
-  showFriendListComponentSub: Subscription;
-
-  showPublicChatComponent = false;
-  showPublicChatComponentSub: Subscription;
-
   constructor(
     public uiService: UiService,
     public accountService: AccountService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -47,42 +31,28 @@ export class SideNavComponent implements OnInit, OnDestroy {
       }
     );
     this.accountService.emitAuthAccount();
-    this.showProfileComponentSub = this.uiService.showProfileComponent$.subscribe(
-      (next: boolean) => {
-        this.showProfileComponent = next;
-      }
+  }
+
+  onHome(): void {
+    this.router.navigate(['home']);
+  }
+
+  onSearchUser(): void {
+    this.accountService.fetchAllProfiles().then(
+      () => {
+        this.router.navigate(['account', 'search']);
+      },
+      (error) => { }
     );
-    this.uiService.emitShowProfileComponent();
-    this.showSearchUserComponentSub = this.uiService.showSearchUserComponent$.subscribe(
-      (next: boolean) => {
-        this.showSearchUserComponent = next;
-      }
+  }
+
+  onAccount(): void {
+    this.accountService.fetchOnwProfile().then(
+      () => {
+        this.router.navigate(['account', this.authAccount.id]);
+      },
+      (error) => { }
     );
-    this.uiService.emitShowSearchUserComponent();
-    this.showProfileEditComponentSub = this.uiService.showProfileEditComponent$.subscribe(
-      (next: boolean) => {
-        this.showProfileEditComponent = next;
-      }
-    );
-    this.uiService.emitShowProfileEditComponent();
-    this.showFriendRequestsComponentSub = this.uiService.showFriendRequestsComponent$.subscribe(
-      (next: boolean) => {
-        this.showFriendRequestsComponent = next;
-      }
-    );
-    this.uiService.emitShowFriendRequestComponent();
-    this.showFriendListComponentSub = this.uiService.showFriendListComponent$.subscribe(
-      (next: boolean) => {
-        this.showFriendListComponent = next;
-      }
-    );
-    this.uiService.emitShowFriendListComponent();
-    this.showPublicChatComponentSub = this.uiService.showPublicChatComponent$.subscribe(
-      (next: boolean) => {
-        this.showPublicChatComponent = next;
-      }
-    );
-    this.uiService.emitShowPublicChatComponent();
   }
 
   storeTheme(): void {
@@ -90,12 +60,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.showProfileComponentSub.unsubscribe();
-    this.showSearchUserComponentSub.unsubscribe();
     this.authAccountSub.unsubscribe();
-    this.showProfileEditComponentSub.unsubscribe();
-    this.showFriendRequestsComponentSub.unsubscribe();
-    this.showFriendListComponentSub.unsubscribe();
-    this.showPublicChatComponentSub.unsubscribe();
   }
 }

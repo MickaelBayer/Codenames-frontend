@@ -6,7 +6,7 @@
         </mat-form-field>
     </div>
     <div class="card-container">
-        <mat-card *ngFor="let friend of friendList" (click)="uiService.showProfile(friend.id)">
+        <mat-card *ngFor="let friend of friendList" (click)="onFriendCard(friend.id)">
             <mat-card-content>
                 <img alt="profile_image" [src]="getProfileImage(friend)" />
                 <div class="account-text">
