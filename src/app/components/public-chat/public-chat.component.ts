@@ -186,7 +186,7 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   appendChatMessage(data: any, isNewMessage: boolean): void {
-    const msg = data.message + '\n';
+    const msg = data.message;
     const username = data.username;
     const userId = data.user_id;
     const profileImage = data.profile_image;

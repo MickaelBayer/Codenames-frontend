@@ -22,12 +22,16 @@ export class PublicChatMessageComponent implements OnInit {
   altProfileImage = 'profile-image';
   titleProfileImage = 'Go to profile';
 
+  splittedMessage: string[] = [];
+
 
   constructor(
     private accountService: AccountService
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.splittedMessage = this.message.split('\n');
+  }
 
   goToProfile(userId: number): void {
     // open in a new tab
@@ -38,4 +42,5 @@ export class PublicChatMessageComponent implements OnInit {
       (error) => { }
     );
   }
+
 }

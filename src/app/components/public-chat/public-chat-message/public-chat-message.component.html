@@ -7,6 +7,8 @@
             <span class="username-span" (click)="goToProfile(userId)">{{username}}&nbsp;</span>
             <span class="timestamp-span">{{timestamp}}</span>
         </div>
-        <p class="message-p">{{message}}</p>
+        <p class="message-p">
+            <span *ngFor="let str of splittedMessage">{{str}}<br *ngIf="str !== ''" /></span>
+        </p>
     </div>
 </div>
