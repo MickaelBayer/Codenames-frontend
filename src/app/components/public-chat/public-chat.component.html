@@ -1,8 +1,19 @@
 <mat-card>
+    <mat-card-header>
+        <mat-card-title>Public chat</mat-card-title>
+        <div class="connected-user">
+            <span>
+                <mat-icon color="accent">person_outline</mat-icon>
+            </span>
+            <span style="color: #797979;">{{connectedUserCount}}</span>
+        </div>
+    </mat-card-header>
     <mat-card-content>
-        <div class="chat-log" #publicChatScrollContainer>
+        <mat-spinner *ngIf="pageNumber === -1 && !isPaginationExhausted" diameter="30" class="messages-loading-spinner">
+        </mat-spinner>
+        <div class="chat-log" (scroll)="onScroll($event)" #publicChatScrollContainer>
             <div class="spacer"></div>
-            <ng-template #publicChatLog class="chat-log">
+            <ng-template #publicChatLog>
             </ng-template>
         </div>
         <div style="display: flex; flex-direction: row; flex: 1;">
@@ -11,10 +22,8 @@
                     class="chat-message-input" [(ngModel)]="message" (keyup.enter)="onSendMessage()" #messageInput
                     autofocus></textarea>
                 <mat-hint style="color: #ff0020;" role="alert" *ngIf="noMessageError">{{noMessageError}}</mat-hint>
-
-
             </mat-form-field>
-            <!-- <button mat-flat-button color="primary" title="Send" (click)="onSendMessage()" class="send-btn">
+            <!-- <button mat-flat-button color="primary" title="Send" (click)="getRoomChatMessages()" class="send-btn">
                 <mat-icon>send</mat-icon>
             </button> -->
         </div>

@@ -1,8 +1,10 @@
 <div class="new-message">
-    <img class="profile-image" [src]="getProfileImage()" alt="profile-image" (click)="goToProfile()">
+    <app-image-preloader [imgUrl]="profileImageUrl" [styleElements]="styleElementsProfileImage" [alt]="altProfileImage"
+        [title]="titleProfileImage" class="profile-image" (click)="goToProfile(userId)"></app-image-preloader>
+    <!-- <img class=" profile-image" [src]="getProfileImage()" alt="profile-image" (click)="goToProfile(userId)"> -->
     <div class="div1">
         <div class="div2">
-            <span class="username-span" (click)="goToProfile()">{{username}}&nbsp;</span>
+            <span class="username-span" (click)="goToProfile(userId)">{{username}}&nbsp;</span>
             <span class="timestamp-span">{{timestamp}}</span>
         </div>
         <p class="message-p">{{message}}</p>

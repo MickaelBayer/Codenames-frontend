@@ -3,8 +3,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/models/account.model';
 import { AccountService } from 'src/app/services/account.service';
-import { UiService } from 'src/app/services/ui.service';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-search-user',
@@ -21,11 +19,20 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
 
   query = '';
 
+  listIsLoaded = false;
+
   differ: KeyValueDiffer<string, any>;
+
+  styleElementsProfileImage = [
+    'height: 50px;',
+    'border-radius: 50%;',
+    'border: 1px solid black;',
+    'margin: auto 0;'
+  ];
+  altProfileImage = 'profile-image';
 
   constructor(
     public accountService: AccountService,
-    public uiService: UiService,
     private differs: KeyValueDiffers,
     private router: Router
   ) { }
@@ -35,6 +42,12 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
       (next: Account[]) => {
         this.searchedAccounts = next;
       }
+    );
+    this.accountService.fetchAllProfiles().then(
+      () => {
+        this.listIsLoaded = true;
+      },
+      (error) => { }
     );
     this.accountService.emitSearchedAccounts();
     this.watchedProfileSub = this.accountService.watchedProfile$.subscribe(
@@ -52,19 +65,24 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
       if (change) {
         change.forEachChangedItem(item => {
           if (item.key === 'query') {
+            this.listIsLoaded = false;
             if (item.currentValue === '') {
-              this.accountService.fetchAllProfiles();
+              this.accountService.fetchAllProfiles().then(
+                () => {
+                  this.listIsLoaded = true;
+                }, (error) => { }
+              );
             } else {
-              this.accountService.searchProfiles(item.currentValue);
+              this.accountService.searchProfiles(item.currentValue).then(
+                () => {
+                  this.listIsLoaded = true;
+                }, (error) => { }
+              );
             }
           }
         });
       }
     }
-  }
-
-  getProfileImage(profile: Account): string {
-    return environment.baseURL + profile.profile_image;
   }
 
   onAccountCard(accountId: number): void {

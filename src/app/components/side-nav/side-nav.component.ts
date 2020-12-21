@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/models/account.model';
 import { AccountService } from 'src/app/services/account.service';
-import { UiService } from 'src/app/services/ui.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -18,7 +17,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   authAccountSub: Subscription;
 
   constructor(
-    public uiService: UiService,
     public accountService: AccountService,
     private router: Router
   ) { }
@@ -38,21 +36,11 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   onSearchUser(): void {
-    this.accountService.fetchAllProfiles().then(
-      () => {
-        this.router.navigate(['account', 'search']);
-      },
-      (error) => { }
-    );
+    this.router.navigate(['account', 'search']);
   }
 
   onAccount(): void {
-    this.accountService.fetchOnwProfile().then(
-      () => {
-        this.router.navigate(['account', this.authAccount.id]);
-      },
-      (error) => { }
-    );
+    this.router.navigate(['account', this.authAccount.id]);
   }
 
   storeTheme(): void {

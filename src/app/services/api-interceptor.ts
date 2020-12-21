@@ -11,10 +11,10 @@ export class ApiInterceptor implements HttpInterceptor {
         if (token) {
             cloned = req.clone({
                 headers: req.headers.set('Authorization', 'bearer '.concat(token)),
-                url: environment.baseURL + environment.apiURL + `${req.url}`
+                url: environment.baseURL + `${req.url}`
             });
         } else {
-            cloned = req.clone({ url: environment.baseURL + environment.apiURL + `${req.url}` });
+            cloned = req.clone({ url: environment.baseURL + `${req.url}` });
         }
         return next.handle(cloned);
     }

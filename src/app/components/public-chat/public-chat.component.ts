@@ -1,8 +1,11 @@
 import {
   AfterViewChecked,
+  AfterViewInit,
   Component,
   ComponentFactoryResolver,
+  ComponentRef,
   ElementRef,
+  HostListener,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -30,6 +33,11 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
   wsPath: string;
 
   roomId = 1;
+  connectedUserCount = 0;
+
+  pageNumber = 1;
+  scrollToBottom = true;
+  isPaginationExhausted = false;
 
   publicChatSocket: WebSocket;
 
@@ -59,9 +67,11 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngAfterViewChecked(): void {
-    try {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (error) { console.log(error); }
+    if (this.scrollToBottom) {
+      try {
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+      } catch (error) { console.log(error); }
+    }
   }
 
   initWebSocket(): void {
@@ -89,7 +99,23 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.showErrorToast(data);
       }
       if (data.message_type === 0) {
-        this.appendChatMessage(data);
+        this.appendChatMessage(data, true);
+      } else if (data.message_type === 1) {
+        this.connectedUserCount = data.connected_user_count;
+      }
+      if (data.join) {
+        this.getRoomChatMessages();
+        console.log(data.username + ' joined the room');
+      }
+      if (data.messages_payload) {
+        const oldScrollHeight = (this.scrollContainer.nativeElement as HTMLElement).scrollHeight;
+        this.handleMessagesPayload(data.messages, data.new_page_number).then(
+          () => {
+            (this.scrollContainer.nativeElement as HTMLElement).scrollTo(0,
+              this.scrollContainer.nativeElement.scrollHeight - oldScrollHeight);
+          },
+          () => { }
+        );
       }
     };
     this.publicChatSocket.onopen = () => { console.log('Public Chat Socket OPEN'); };
@@ -112,18 +138,82 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.message = '';
   }
 
-  appendChatMessage(data: any): void {
-    const msg = data.message + '\n';
-    const username = data.username;
-    const userId = data.userId;
-    const profileImage = data.profile_image;
-    const timestamp = data.timestamp;
-    this.createChatMessageElement(msg, username, userId, profileImage, timestamp);
+  onScroll(event: any): void {
+    this.scrollToBottom = this.scrollContainer.nativeElement.scrollHeight
+      === Math.round(this.scrollContainer.nativeElement.scrollTop)
+      + this.scrollContainer.nativeElement.offsetHeight;
+    if (this.scrollContainer.nativeElement.scrollTop <= 5) {
+      this.getRoomChatMessages();
+    }
   }
 
-  createChatMessageElement(msg: string, username: string, userId: number, profileImage: string, timestamp: string): void {
+  setPageNumber(pageNumber: number): void {
+    this.pageNumber = pageNumber;
+  }
+
+  setPaginationExhausted(): void {
+    this.setPageNumber(-1);
+    this.isPaginationExhausted = true;
+  }
+
+  getRoomChatMessages(): void {
+    if (this.pageNumber !== -1) {
+      const pageNumber = this.pageNumber;
+      this.setPageNumber(-1);  // query is in progress
+      this.publicChatSocket.send(JSON.stringify({
+        command: 'get_chatroom_messages',
+        room_id: this.roomId,
+        page_number: pageNumber
+      }));
+    }
+  }
+
+  handleMessagesPayload(messages, newPageNumber: number): Promise<void> {
+    return new Promise(
+      (resolve, reject) => {
+        if (messages !== null && messages !== 'undefined') {
+          this.pageNumber = newPageNumber;
+          messages.forEach((message) => {
+            this.appendChatMessage(message, false);
+          });
+          resolve();
+        } else {
+          this.setPaginationExhausted();
+          reject();
+        }
+      }
+    );
+  }
+
+  appendChatMessage(data: any, isNewMessage: boolean): void {
+    const msg = data.message + '\n';
+    const username = data.username;
+    const userId = data.user_id;
+    const profileImage = data.profile_image;
+    const timestamp = data.timestamp;
+    this.createChatMessageElement(msg, username, userId, profileImage, timestamp, isNewMessage);
+  }
+
+  createChatMessageElement(
+    msg: string,
+    username: string,
+    userId: number,
+    profileImage: string,
+    timestamp: string,
+    isNewMessage: boolean
+  ): void {
     const factory = this.factoryResolver.resolveComponentFactory(PublicChatMessageComponent);
-    const inserted = this.publicChatLog.createComponent(factory);
+    let inserted: ComponentRef<PublicChatMessageComponent>;
+    const oldScrollHeight = this.scrollContainer.nativeElement.scrollHeight;
+    const oldTopPlusOffset = Math.round(this.scrollContainer.nativeElement.scrollTop) + this.scrollContainer.nativeElement.offsetHeight;
+    if (isNewMessage) {
+      inserted = this.publicChatLog.createComponent(factory);
+      if (oldScrollHeight === oldTopPlusOffset) {
+        this.scrollToBottom = true;
+      }
+    } else {
+      inserted = this.publicChatLog.createComponent(factory, 0);
+    }
     inserted.instance.message = msg;
     inserted.instance.username = username;
     inserted.instance.userId = userId;

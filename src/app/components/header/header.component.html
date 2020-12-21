@@ -1,9 +1,9 @@
 <!-- Toolbar -->
 <mat-toolbar color="primary" #header>
-    <button mat-icon-button class="example-icon" aria-label="menu icon" (click)="toggleDrawer.emit()">
+    <button mat-icon-button class="example-icon" aria-label="menu icon" (click)="toggleDrawer.emit()" title="Menu">
         <mat-icon>menu</mat-icon>
     </button>
-    <a mat-icon-button class="example-icon" aria-label="home" routerLink="/home">
+    <a mat-icon-button class="example-icon" aria-label="home" routerLink="/home" title="Home">
         <mat-icon>home</mat-icon>
     </a>
     <span class="spacer"></span>
@@ -15,7 +15,8 @@
         *ngIf="accountService.isLoggedOut()">Register</button>
     <button mat-icon-button class="favorite-icon" aria-label="heart icon" [matMenuTriggerFor]="AccountActions"
         *ngIf="accountService.isLoggedIn() && authAccount">
-        <img alt="profile_image" [src]="getProfileImage()" class="profile-icon" />
+        <app-image-preloader [imgUrl]="authAccount.profile_image" [styleElements]="styleElementsProfileImage"
+            [alt]="altProfileImage" [title]="titleProfileImage" class=".profile-icon"></app-image-preloader>
     </button>
     <mat-menu #AccountActions="matMenu">
         <button mat-menu-item (click)="onAccount()">Account</button>

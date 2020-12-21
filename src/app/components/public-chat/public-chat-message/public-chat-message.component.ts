@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { environment } from '../../../../environments/environment';
-
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'app-public-chat-message',
@@ -15,15 +14,28 @@ export class PublicChatMessageComponent implements OnInit {
   @Input() userId: number;
   @Input() timestamp: string;
 
-  constructor() { }
+  styleElementsProfileImage = [
+    'width: 33px;',
+    'height: 33px;',
+    'border-radius: 50%;',
+  ];
+  altProfileImage = 'profile-image';
+  titleProfileImage = 'Go to profile';
+
+
+  constructor(
+    private accountService: AccountService
+  ) { }
 
   ngOnInit(): void { }
 
-  getProfileImage(): string {
-    return environment.baseURL + this.profileImageUrl;
-  }
-
-  goToProfile(): void {
-    console.log('Go to profile ...');
+  goToProfile(userId: number): void {
+    // open in a new tab
+    this.accountService.fetchProfile(userId).then(
+      () => {
+        window.open(window.location.origin + '/account/' + userId, '_blank');
+      },
+      (error) => { }
+    );
   }
 }

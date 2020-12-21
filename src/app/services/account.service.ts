@@ -5,6 +5,9 @@ import jwt_decode from 'jwt-decode';
 import * as moment from 'moment';
 import { UnRegistredAccount, UnAuthAccount, Account } from '../models/account.model';
 import { FriendRequest } from '../models/friend-request.model';
+import { environment } from 'src/environments/environment';
+
+const apiUrlPrefix = environment.apiURL;
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +47,7 @@ export class AccountService {
   register(unRegistredAccount: UnRegistredAccount): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.post('account/register/', unRegistredAccount).subscribe(
+        this.httpClient.post(apiUrlPrefix + 'account/register/', unRegistredAccount).subscribe(
           (response: string) => {
             const json = JSON.parse(response);
             this.setSession(json);
@@ -63,7 +66,7 @@ export class AccountService {
   login(unAuthAccount: UnAuthAccount): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.post('account/login/', unAuthAccount).subscribe(
+        this.httpClient.post(apiUrlPrefix + 'account/login/', unAuthAccount).subscribe(
           (response: string) => {
             const json = JSON.parse(response);
             this.setSession(json);
@@ -118,7 +121,7 @@ export class AccountService {
 
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.post('account/edit/', formData).subscribe(
+        this.httpClient.post(apiUrlPrefix + 'account/edit/', formData).subscribe(
           (response: string) => {
             this.authAccount = JSON.parse(response).user;
             this.emitAuthAccount();
@@ -137,10 +140,8 @@ export class AccountService {
   fetchOnwProfile(): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.get('account/profile/').subscribe(
+        this.httpClient.get(apiUrlPrefix + 'account/profile/').subscribe(
           (response: string) => {
-            this.watchedProfile = JSON.parse(response).data;
-            this.emitWatchedProfile();
             this.authAccount = JSON.parse(response).data;
             this.emitAuthAccount();
             resolve();
@@ -165,7 +166,7 @@ export class AccountService {
   fetchProfile(profileId: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.get('account/' + profileId).subscribe(
+        this.httpClient.get(apiUrlPrefix + 'account/' + profileId).subscribe(
           (response: string) => {
             this.watchedProfile = JSON.parse(response).data;
             this.emitWatchedProfile();
@@ -182,7 +183,7 @@ export class AccountService {
   logout(): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.get('account/logout/').subscribe(
+        this.httpClient.get(apiUrlPrefix + 'account/logout/').subscribe(
           () => {
             localStorage.removeItem('token');
             localStorage.removeItem('expires_at');
@@ -209,7 +210,7 @@ export class AccountService {
     return new Promise(
       (resolve, reject) => {
         const params = new HttpParams().set('q', query);
-        this.httpClient.get('account/search/', { params }).subscribe(
+        this.httpClient.get(apiUrlPrefix + 'account/search/', { params }).subscribe(
           (response: any) => {
             this.searchedAccounts = JSON.parse(response).data;
             this.emitSearchedAccounts();
@@ -226,7 +227,7 @@ export class AccountService {
   fetchAllProfiles(): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.get('account/all/').subscribe(
+        this.httpClient.get(apiUrlPrefix + 'account/all/').subscribe(
           (response: any) => {
             this.searchedAccounts = JSON.parse(response).data;
             this.emitSearchedAccounts();
@@ -266,7 +267,7 @@ export class AccountService {
   sendFriendRequest(reciever_id: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.post('friend/friend-request/', { reciever_id }).subscribe(
+        this.httpClient.post(apiUrlPrefix + 'friend/friend-request/', { reciever_id }).subscribe(
           (response: string) => {
             this.fetchProfile(reciever_id);
             resolve();
@@ -282,7 +283,7 @@ export class AccountService {
   fetchFriendRequests(accountId: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.get('friend/friend-request/' + accountId + '/').subscribe(
+        this.httpClient.get(apiUrlPrefix + 'friend/friend-request/' + accountId + '/').subscribe(
           (response: string) => {
             this.friendRequests = JSON.parse(response).friend_requests;
             this.emitFriendRequests();
@@ -300,7 +301,7 @@ export class AccountService {
     return new Promise(
       (resolve, reject) => {
         const params = new HttpParams().set('q', query);
-        this.httpClient.get('friend/friend-request/' + accountId + '/', { params }).subscribe(
+        this.httpClient.get(apiUrlPrefix + 'friend/friend-request/' + accountId + '/', { params }).subscribe(
           (response: string) => {
             this.friendRequests = JSON.parse(response).friend_requests;
             this.emitFriendRequests();
@@ -318,7 +319,7 @@ export class AccountService {
   acceptFriendRequest(id: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.get('friend/accept-friend-request/' + id + '/').subscribe(
+        this.httpClient.get(apiUrlPrefix + 'friend/accept-friend-request/' + id + '/').subscribe(
           (response: string) => {
             resolve();
           },
@@ -332,7 +333,7 @@ export class AccountService {
 
   // tslint:disable-next-line: variable-name
   removeFriend(accountId: number): void {
-    this.httpClient.post('friend/friend-remove/', { reciever_user_id: accountId }).subscribe(
+    this.httpClient.post(apiUrlPrefix + 'friend/friend-remove/', { reciever_user_id: accountId }).subscribe(
       (response: string) => {
         this.fetchProfile(this.watchedProfile.id);
       },
@@ -359,7 +360,7 @@ export class AccountService {
   cancelFriendRequest(accountId: number): Promise<void> {
     return new Promise(
       (resolve, reject) => {
-        this.httpClient.post('friend/friend-cancel/', { reciever_id: accountId }).subscribe(
+        this.httpClient.post(apiUrlPrefix + 'friend/friend-cancel/', { reciever_id: accountId }).subscribe(
           (response: string) => {
             resolve();
           },
@@ -372,7 +373,7 @@ export class AccountService {
   }
 
   getFriendList(accountId: number): void {
-    this.httpClient.get('friend/list/' + accountId + '/').subscribe(
+    this.httpClient.get(apiUrlPrefix + 'friend/list/' + accountId + '/').subscribe(
       (response: string) => {
         this.friendList = JSON.parse(response).friends;
         this.emitFriendList();
@@ -383,7 +384,7 @@ export class AccountService {
 
   getFriendListWithSearch(accountId: number, query: string): void {
     const params = new HttpParams().set('q', query);
-    this.httpClient.get('friend/list/' + accountId + '/', { params }).subscribe(
+    this.httpClient.get(apiUrlPrefix + 'friend/list/' + accountId + '/', { params }).subscribe(
       (response: string) => {
         this.friendList = JSON.parse(response).friends;
         this.emitFriendList();

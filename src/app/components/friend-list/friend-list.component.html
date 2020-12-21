@@ -8,7 +8,8 @@
     <div class="card-container">
         <mat-card *ngFor="let friend of friendList" (click)="onFriendCard(friend.id)">
             <mat-card-content>
-                <img alt="profile_image" [src]="getProfileImage(friend)" />
+                <app-image-preloader [imgUrl]="friend.profile_image" [styleElements]="styleElementsProfileImage"
+                    [alt]="altProfileImage" class="image-preloader"></app-image-preloader>
                 <div class="account-text">
                     <h3 style="margin: 0;">{{friend.username}}</h3>
                 </div>

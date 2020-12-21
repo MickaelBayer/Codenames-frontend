@@ -2,10 +2,8 @@ import { Component, DoCheck, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AccountService } from 'src/app/services/account.service';
 import { Account } from '../../models/account.model';
-import { environment } from '../../../environments/environment';
 import { KeyValueDiffer } from '@angular/core';
 import { KeyValueDiffers } from '@angular/core';
-import { UiService } from 'src/app/services/ui.service';
 import { FriendRequest } from 'src/app/models/friend-request.model';
 import { Router } from '@angular/router';
 
@@ -30,9 +28,16 @@ export class FriendRequestsComponent implements OnInit, OnDestroy, DoCheck {
 
   differ: KeyValueDiffer<string, any>;
 
+  styleElementsProfileImage = [
+    'height: 50px;',
+    'border-radius: 50%;',
+    'border: 1px solid black;',
+    'margin: auto 0;'
+  ];
+  altProfileImage = 'profile-image';
+
   constructor(
     public accountService: AccountService,
-    public uiService: UiService,
     private differs: KeyValueDiffers,
     private router: Router
   ) { }
@@ -74,10 +79,6 @@ export class FriendRequestsComponent implements OnInit, OnDestroy, DoCheck {
         });
       }
     }
-  }
-
-  getProfileImage(profile: Account): string {
-    return environment.baseURL + profile.profile_image;
   }
 
   onProfileCard(friendRequest: FriendRequest): void {

@@ -1,0 +1,3 @@
+<img [alt]="alt" [src]="defaultImgUrl" [title]="title ? title:''" [hidden]="isLoaded" [style]="getStyleValues()" />
+<img [alt]="alt" [src]="imgFullUrl" [hidden]="!isLoaded" (load)="onLoad()" [title]="title ? title:''"
+    [style]="getStyleValues()" />

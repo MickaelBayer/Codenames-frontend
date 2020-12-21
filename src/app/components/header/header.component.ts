@@ -22,6 +22,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   unRegitredAccount: UnRegistredAccount;
   unAuthAccount: UnAuthAccount;
 
+  styleElementsProfileImage = [
+    'height: 38px;',
+    'border-radius: 50%;',
+    'margin: auto 0;'
+  ];
+  altProfileImage = 'profile-image';
+  titleProfileImage = 'Account';
+
   constructor(
     public dialog: MatDialog,
     public accountService: AccountService,
@@ -29,13 +37,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.accountService.fetchOnwProfile();
     this.authAccountSub = this.accountService.authAccount$.subscribe(
       (value: Account) => {
         this.authAccount = value;
       }
     );
-    this.accountService.emitAuthAccount();
+    this.accountService.fetchOnwProfile();
   }
 
   onRegister(): void {
@@ -77,12 +84,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onAccount(): void {
-    this.accountService.fetchOnwProfile().then(
-      () => {
-        this.router.navigate(['/account', this.authAccount.id]);
-      },
-      (error) => { }
-    );
+    this.router.navigate(['/account', this.authAccount.id]);
   }
 
   getProfileImage(): string {

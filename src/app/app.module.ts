@@ -14,7 +14,6 @@ import { LoginDialogComponent } from './components/header/login-dialog/login-dia
 import { ProfileComponent } from './components/profile/profile.component';
 import { AccountService } from './services/account.service';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
-import { UiService } from './services/ui.service';
 import { SearchUserComponent } from './components/search-user/search-user.component';
 import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
@@ -24,6 +23,8 @@ import { PublicChatComponent } from './components/public-chat/public-chat.compon
 import { PublicChatMessageComponent } from './components/public-chat/public-chat-message/public-chat-message.component';
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { ImagePreloaderComponent } from './components/image-preloader/image-preloader.component';
+// import { LazyImgDirective } from './lazy-img.directive';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,9 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
     FriendListComponent,
     PublicChatComponent,
     PublicChatMessageComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    ImagePreloaderComponent,
+    // LazyImgDirective
   ],
   imports: [
     AppMaterialModule,
@@ -53,7 +56,6 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
   ],
   providers: [
     AccountService,
-    UiService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ApiInterceptor,

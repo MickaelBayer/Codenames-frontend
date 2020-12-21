@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/models/account.model';
 import { AccountService } from 'src/app/services/account.service';
-import { UiService } from 'src/app/services/ui.service';
 import { environment } from '../../../environments/environment';
 import { ImageCroppedEvent, base64ToFile } from 'ngx-image-cropper';
 import { Router } from '@angular/router';
@@ -29,7 +28,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
 
   constructor(
     public accountService: AccountService,
-    public uiService: UiService,
     private router: Router,
     private location: Location
   ) { }

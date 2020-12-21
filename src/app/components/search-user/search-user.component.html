@@ -5,10 +5,12 @@
             <input matInput placeholder="Search..." [(ngModel)]="query">
         </mat-form-field>
     </div>
-    <div class="card-container">
+    <mat-spinner *ngIf="!listIsLoaded" diameter='50' style="margin: 0 auto;"></mat-spinner>
+    <div class="card-container" *ngIf="listIsLoaded">
         <mat-card *ngFor="let account of searchedAccounts" (click)="onAccountCard(account.id)">
             <mat-card-content>
-                <img alt="profile_image" [src]="getProfileImage(account)" />
+                <app-image-preloader [imgUrl]="account.profile_image" [styleElements]="styleElementsProfileImage"
+                    [alt]="altProfileImage" class="image-preloader"></app-image-preloader>
                 <div class="account-text">
                     <h3 style="margin: 0;">{{account.username}}</h3>
                 </div>

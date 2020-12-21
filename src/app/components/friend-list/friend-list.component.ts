@@ -2,8 +2,6 @@ import { Component, OnDestroy, OnInit, DoCheck, KeyValueDiffers, KeyValueDiffer 
 import { Subscription } from 'rxjs';
 import { AccountService } from 'src/app/services/account.service';
 import { Account } from '../../models/account.model';
-import { environment } from '../../../environments/environment';
-import { UiService } from 'src/app/services/ui.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -26,9 +24,16 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
 
   differ: KeyValueDiffer<string, any>;
 
+  styleElementsProfileImage = [
+    'height: 50px;',
+    'border-radius: 50%;',
+    'border: 1px solid black;',
+    'margin: auto 0;'
+  ];
+  altProfileImage = 'profile-image';
+
   constructor(
     public accountService: AccountService,
-    public uiService: UiService,
     private differs: KeyValueDiffers,
     private router: Router
   ) { }
@@ -71,10 +76,6 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
         });
       }
     }
-  }
-
-  getProfileImage(profile: Account): string {
-    return environment.baseURL + profile.profile_image;
   }
 
   onFriendCard(friendId: number): void {

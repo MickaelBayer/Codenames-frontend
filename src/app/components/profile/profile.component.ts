@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { Account } from '../../models/account.model';
 import { AccountService } from '../../services/account.service';
 import { environment } from '../../../environments/environment';
-import { UiService } from 'src/app/services/ui.service';
 import { FriendRequest } from 'src/app/models/friend-request.model';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
@@ -25,9 +24,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   accountIdSub: Subscription;
 
+  profileIsLoaded = false;
+
+  styleElementsProfileImage = [
+    'max-width: 250px;',
+    'height: auto;',
+    'border-radius: 50%;',
+    'border: 1px solid black;',
+    'margin: auto;'
+  ];
+  altProfileImage = 'profile-image';
+  titleProfileImage = 'Profile image';
+
   constructor(
     private accountService: AccountService,
-    private uiService: UiService,
     private route: ActivatedRoute,
     private router: Router,
   ) { }
@@ -49,10 +59,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.accountIdSub = this.route.paramMap.subscribe(
       (params: ParamMap) => {
         if (params.has('id')) {
-          this.accountService.fetchProfile(params.get('id') as any as number);
-
-        } else {
-          this.accountService.fetchOnwProfile();
+          this.accountService.fetchProfile(params.get('id') as any as number).then(
+            () => {
+              this.profileIsLoaded = true;
+            },
+            (error) => { }
+          );
         }
       }
     );
