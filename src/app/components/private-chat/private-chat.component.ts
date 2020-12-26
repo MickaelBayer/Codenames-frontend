@@ -1,11 +1,9 @@
 import {
   AfterViewChecked,
-  AfterViewInit,
   Component,
   ComponentFactoryResolver,
   ComponentRef,
   ElementRef,
-  HostListener,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -14,39 +12,44 @@ import {
 import { Subscription } from 'rxjs';
 import { AccountService } from 'src/app/services/account.service';
 import { environment } from '../../../environments/environment';
-import { PublicChatMessageComponent } from './public-chat-message/public-chat-message.component';
 import { Account } from '../../models/account.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatService } from 'src/app/services/chat.service';
-
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { PrivateChat } from 'src/app/models/chat.model';
+import { PrivateChatMessageComponent } from './private-chat-message/private-chat-message.component';
 
 @Component({
-  selector: 'app-public-chat',
-  templateUrl: './public-chat.component.html',
-  styleUrls: ['./public-chat.component.scss']
+  selector: 'app-private-chat',
+  templateUrl: './private-chat.component.html',
+  styleUrls: ['./private-chat.component.scss']
 })
-export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class PrivateChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
-  @ViewChild('publicChatLog', { read: ViewContainerRef }) publicChatLog: ViewContainerRef;
-  @ViewChild('publicChatScrollContainer') scrollContainer: ElementRef;
+  @ViewChild('privateChatLog', { read: ViewContainerRef }) privateChatLog: ViewContainerRef;
+  @ViewChild('privateChatScrollContainer') scrollContainer: ElementRef;
 
   wsScheme = 'ws';
   wsPath: string;
 
-  roomId = 1;
+  room: PrivateChat;
+  roomSub: Subscription;
+
   connectedUserCount = 0;
 
   pageNumber = 1;
   scrollToBottom = true;
   isPaginationExhausted = false;
 
-  publicChatSocket: WebSocket;
+  privateChatSocket: WebSocket;
 
   message = '';
   noMessageError: string;
 
   authAccount: Account;
   authAccountSub: Subscription;
+
+  chatIdSub: Subscription;
 
   styleElementsProfileImage = [
     'width: 33px;',
@@ -56,24 +59,44 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
   altProfileImage = 'chat-image';
 
   // TODO: Change this to be dynamic
-  defautPublicChatImage = '/media/default_chat_image/chat_image.png';
+  defautPrivateChatImage = '/media/default_chat_image/chat_image.png';
 
   constructor(
     private factoryResolver: ComponentFactoryResolver,
     private accountService: AccountService,
     private snackBar: MatSnackBar,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
-    // this.accountService.fetchOnwProfile();
     this.authAccountSub = this.accountService.authAccount$.subscribe(
       (value: Account) => {
         const oldAuthAccount = this.authAccount;
         this.authAccount = value;
       }
     );
-    this.initWebSocket();
+    this.roomSub = this.chatService.displayedRoom$.subscribe(
+      (next: PrivateChat) => {
+        this.room = next;
+        if (this.room) {
+          this.initWebSocket();
+        }
+      }
+    );
+    this.chatService.emitdisplayedRoom();
+    this.chatIdSub = this.route.paramMap.subscribe(
+      (params: ParamMap) => {
+        if (params.has('id')) {
+          this.chatService.fetchPrivateChats().then(
+            () => {
+              this.chatService.setdisplayedRoom(Number(params.get('id')));
+            }, (error) => { }
+          );
+        }
+      }
+    );
   }
 
   ngAfterViewChecked(): void {
@@ -88,24 +111,29 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
 
   initWebSocket(): void {
     // on login reload WS ?!
-    if (this.publicChatSocket) {
-      this.publicChatSocket.close();
+    if (this.privateChatSocket) {
+      this.privateChatSocket.close();
+    }
+    this.pageNumber = 1;
+    this.scrollToBottom = true;
+    if (this.privateChatLog) {
+      this.privateChatLog.clear();
     }
     this.wsScheme = window.location.protocol === 'https' ? 'wss' : 'ws';
-    this.wsPath = this.wsScheme + '://' + window.location.host.split(':')[0] + ':' + environment.wsPort + '/public-chat/' + this.roomId + '/';
-    this.publicChatSocket = new WebSocket(this.wsPath);
-    this.publicChatSocket.addEventListener('open', () => {
-      console.log('Public Chat Socket OPEN');
+    this.wsPath = this.wsScheme + '://' + window.location.host.split(':')[0] + ':' + environment.wsPort + '/private-chat/' + this.room.id + '/';
+    this.privateChatSocket = new WebSocket(this.wsPath);
+    this.privateChatSocket.addEventListener('open', () => {
+      console.log('Private Chat Socket OPEN');
       // join the chat room
       if (this.accountService.isLoggedIn()) {
-        this.publicChatSocket.send(JSON.stringify({
+        this.privateChatSocket.send(JSON.stringify({
           command: 'join',
-          room_id: this.roomId
+          room_id: this.room.id
         }));
       }
     });
-    this.publicChatSocket.onmessage = (message) => {
-      console.log('Public Chat Socket message');
+    this.privateChatSocket.onmessage = (message) => {
+      console.log('Private Chat Socket message');
       const data = JSON.parse(message.data);
       if (data.error) {
         this.showErrorToast(data);
@@ -130,13 +158,13 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
         );
       }
     };
-    this.publicChatSocket.onopen = () => { console.log('Public Chat Socket OPEN'); };
-    this.publicChatSocket.onclose = () => { console.log('Public Chat Socket CLOSED'); };
-    this.publicChatSocket.onerror = (e) => { console.log('Public Chat Socket ERROR: '); /* console.log(e); */ };
-    if (this.publicChatSocket.readyState === WebSocket.OPEN) {
-      console.log('Public Chat Socket OPEN');
-    } else if (this.publicChatSocket.readyState === WebSocket.CONNECTING) {
-      console.log('Public Chat Socket CONNECTING');
+    this.privateChatSocket.onopen = () => { console.log('Private Chat Socket OPEN'); };
+    this.privateChatSocket.onclose = () => { console.log('Private Chat Socket CLOSED'); };
+    this.privateChatSocket.onerror = (e) => { console.log('Private Chat Socket ERROR: '); /* console.log(e); */ };
+    if (this.privateChatSocket.readyState === WebSocket.OPEN) {
+      console.log('Private Chat Socket OPEN');
+    } else if (this.privateChatSocket.readyState === WebSocket.CONNECTING) {
+      console.log('Private Chat Socket CONNECTING');
     }
   }
 
@@ -144,9 +172,9 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
     const data = JSON.stringify({
       command: 'send',
       message: this.message,
-      room_id: this.roomId
+      room_id: this.room.id
     });
-    this.publicChatSocket.send(data);
+    this.privateChatSocket.send(data);
     this.message = '';
   }
 
@@ -154,7 +182,7 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.scrollToBottom = this.scrollContainer.nativeElement.scrollHeight
       === Math.round(this.scrollContainer.nativeElement.scrollTop)
       + this.scrollContainer.nativeElement.offsetHeight;
-    if (this.scrollContainer.nativeElement.scrollTop <= 5 && this.publicChatSocket.readyState === WebSocket.OPEN) {
+    if (this.scrollContainer.nativeElement.scrollTop <= 5 && this.privateChatSocket.readyState === WebSocket.OPEN) {
       this.getRoomChatMessages();
     }
   }
@@ -172,9 +200,9 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
     if (this.pageNumber !== -1) {
       const pageNumber = this.pageNumber;
       this.setPageNumber(-1);  // query is in progress
-      this.publicChatSocket.send(JSON.stringify({
+      this.privateChatSocket.send(JSON.stringify({
         command: 'get_chatroom_messages',
-        room_id: this.roomId,
+        room_id: this.room.id,
         page_number: pageNumber
       }));
     }
@@ -214,17 +242,17 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
     timestamp: string,
     isNewMessage: boolean
   ): void {
-    const factory = this.factoryResolver.resolveComponentFactory(PublicChatMessageComponent);
-    let inserted: ComponentRef<PublicChatMessageComponent>;
+    const factory = this.factoryResolver.resolveComponentFactory(PrivateChatMessageComponent);
+    let inserted: ComponentRef<PrivateChatMessageComponent>;
     const oldScrollHeight = this.scrollContainer.nativeElement.scrollHeight;
     const oldTopPlusOffset = Math.round(this.scrollContainer.nativeElement.scrollTop) + this.scrollContainer.nativeElement.offsetHeight;
     if (isNewMessage) {
-      inserted = this.publicChatLog.createComponent(factory);
+      inserted = this.privateChatLog.createComponent(factory);
       if (oldScrollHeight === oldTopPlusOffset) {
         this.scrollToBottom = true;
       }
     } else {
-      inserted = this.publicChatLog.createComponent(factory, 0);
+      inserted = this.privateChatLog.createComponent(factory, 0);
     }
     inserted.instance.message = msg;
     inserted.instance.username = username;
@@ -242,15 +270,17 @@ export class PublicChatComponent implements OnInit, OnDestroy, AfterViewChecked 
     //   duration: 222000,
     //   horizontalPosition: 'center',
     //   verticalPosition: 'top',
-    //   viewContainerRef: this.publicChatLog,
+    //   viewContainerRef: this.privateChatLog,
     //   panelClass: 'error-snackbar'
     // });
   }
 
   ngOnDestroy(): void {
+    this.chatIdSub.unsubscribe();
     this.authAccountSub.unsubscribe();
-    if (this.publicChatSocket) {
-      this.publicChatSocket.close();
+    this.roomSub.unsubscribe();
+    if (this.privateChatSocket) {
+      this.privateChatSocket.close();
     }
   }
 }

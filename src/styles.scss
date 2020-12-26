@@ -22,6 +22,17 @@ app-public-chat {
     overflow: hidden;
 }
 
+app-private-chat {
+    max-height: 100%;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+app-home {
+    width: 100%;
+    height: 100%;
+}
+
 
 #publicChatFormField .mat-form-field-underline{
     display: none !important;
@@ -42,5 +53,13 @@ app-public-chat {
 }
 
 .theme-alternate #publicChatFormField textarea {
+    background: map-get($map: $theme-accent, $key: lighter);
+}
+
+.highlighted {
+    background: map-get($map: $theme-accent, $key: main);
+}
+
+.theme-alternate .highlighted {
     background: map-get($map: $theme-accent, $key: lighter);
 }

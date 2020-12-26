@@ -1,0 +1,54 @@
+.profile-image{
+	width: 33px;
+	height: 33px;
+	margin-top: 0px;
+    margin-bottom: auto;
+}
+
+.profile-image:hover{
+    cursor: pointer;
+}
+
+.username-span {
+    font-weight: 600;
+    margin: 0 5px auto 5px;
+}
+
+.timestamp-span {
+    font-weight: 400;
+    font-size: 0.8em;
+    color: #797979;
+}
+
+.username-span:hover {
+    cursor: pointer;
+}
+
+.message-p {
+    font-weight: 450;
+    margin: 5px 5px auto 5px;
+    white-space: normal;
+    -ms-word-break: break-all;
+    word-break: break-all;
+}
+
+.chat-message-input {
+    flex-grow: 1;
+}
+
+.new-message {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    justify-content: flex-start;
+}
+
+.div1 {
+    display: flex;
+    flex-direction: column;
+}
+
+.div2 {
+    display: flex;
+    flex-direction: row;
+}

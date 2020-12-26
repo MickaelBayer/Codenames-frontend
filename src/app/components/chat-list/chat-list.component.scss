@@ -1,0 +1,43 @@
+mat-card-header {
+    display: flex;
+	flex-direction: row;
+    border-bottom: solid 1px #797979;
+    margin-bottom: 2px;
+}
+
+mat-card {
+    height: calc(100% - 32px);
+}
+
+.chat-list-container {
+    height: 100%;
+}
+
+.chat-list-item {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    border-radius: 10px;
+}
+
+.chat-list-item:hover {
+    cursor: pointer;
+}
+
+.chat-title {
+    margin: auto 8px auto 0;
+    font-weight: 600;
+    font-size: medium;
+}
+
+.profile-image{
+	width: 33px;
+	height: 33px;
+	margin:auto 8px auto 8px;
+}
+
+.public-chat {
+    border-bottom: solid 1px #797979;
+}
+

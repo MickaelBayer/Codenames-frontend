@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { UnRegistredAccount, UnAuthAccount, Account } from '../models/account.model';
 import { FriendRequest } from '../models/friend-request.model';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 const apiUrlPrefix = environment.apiURL;
 
@@ -33,7 +34,8 @@ export class AccountService {
   errorMsgs$ = new Subject<any>();
 
   constructor(
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private router: Router
   ) {
     // set the cookie for the sockets authentification if a session is stored in the local storage
     try {
@@ -51,6 +53,7 @@ export class AccountService {
           (response: string) => {
             const json = JSON.parse(response);
             this.setSession(json);
+            this.router.navigate(['home']);
             resolve();
           },
           (error) => {
@@ -70,6 +73,7 @@ export class AccountService {
           (response: string) => {
             const json = JSON.parse(response);
             this.setSession(json);
+            this.router.navigate(['home']);
             resolve();
           },
           (error) => {

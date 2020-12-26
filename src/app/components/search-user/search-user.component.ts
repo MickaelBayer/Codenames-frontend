@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/models/account.model';
 import { AccountService } from 'src/app/services/account.service';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
   selector: 'app-search-user',
@@ -33,6 +34,7 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
 
   constructor(
     public accountService: AccountService,
+    private chatService: ChatService,
     private differs: KeyValueDiffers,
     private router: Router
   ) { }
@@ -96,7 +98,12 @@ export class SearchUserComponent implements OnInit, OnDestroy, DoCheck {
 
   onSendMessage(account: Account, event: MouseEvent): void {
     event.stopPropagation();
-    console.log('send a message to ' + account.username);
+    this.chatService.findOrCreatePrivateChatRoom(account.id).then(
+      (value: number) => {
+        this.router.navigate(['home', 'private-chat', value]);
+      },
+      (error) => { }
+    );
   }
 
   ngOnDestroy(): void {

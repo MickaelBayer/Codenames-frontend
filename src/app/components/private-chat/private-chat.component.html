@@ -1,9 +1,9 @@
-<mat-card>
+<mat-card *ngIf="room">
     <mat-card-header>
         <mat-card-title style="display: flex;">
-            <app-image-preloader [imgUrl]="defautPublicChatImage" [styleElements]="styleElementsProfileImage"
+            <app-image-preloader [imgUrl]="room.chatImage" [styleElements]="styleElementsProfileImage"
                 [alt]="altProfileImage" class="profile-image"></app-image-preloader>
-            <span style="margin: auto 8px;">Public chat</span>
+            <span style="margin: auto 8px;">{{room.title}}</span>
         </mat-card-title>
         <div class="connected-user">
             <span>
@@ -15,9 +15,9 @@
     <mat-card-content>
         <mat-spinner *ngIf="pageNumber === -1 && !isPaginationExhausted" diameter="30" class="messages-loading-spinner">
         </mat-spinner>
-        <div class="chat-log" (scroll)="onScroll($event)" #publicChatScrollContainer>
+        <div class="chat-log" (scroll)="onScroll($event)" #privateChatScrollContainer>
             <div class="spacer"></div>
-            <ng-template #publicChatLog>
+            <ng-template #privateChatLog>
             </ng-template>
         </div>
         <div style="display: flex; flex-direction: row; flex: 1;">

@@ -64,12 +64,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.email && result.password) {
-        this.accountService.login(result).then(
-          () => {
-            this.router.navigate(['home']);
-          },
-          (error) => { }
-        );
+        this.accountService.login(result);
       }
     });
   }
@@ -77,7 +72,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onLogout(): void {
     this.accountService.logout().then(
       () => {
-        this.router.navigate(['home']);
+        this.router.navigate(['welcome']);
       },
       (error) => { }
     );

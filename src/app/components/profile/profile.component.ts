@@ -5,6 +5,7 @@ import { AccountService } from '../../services/account.service';
 import { environment } from '../../../environments/environment';
 import { FriendRequest } from 'src/app/models/friend-request.model';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
   selector: 'app-profile',
@@ -38,6 +39,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   constructor(
     private accountService: AccountService,
+    private chatService: ChatService,
     private route: ActivatedRoute,
     private router: Router,
   ) { }
@@ -59,7 +61,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.accountIdSub = this.route.paramMap.subscribe(
       (params: ParamMap) => {
         if (params.has('id')) {
-          this.accountService.fetchProfile(params.get('id') as any as number).then(
+          this.accountService.fetchProfile(Number(params.get('id'))).then(
             () => {
               this.profileIsLoaded = true;
             },
@@ -166,7 +168,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onSendMessage(): void {
-    console.log('onSendMessage');
+    this.chatService.findOrCreatePrivateChatRoom(this.watchedProfile.id).then(
+      (value: number) => {
+        this.router.navigate(['home', 'private-chat', value]);
+      },
+      (error) => { }
+    );
   }
 
   onChangePassword(): void {

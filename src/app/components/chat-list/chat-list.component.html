@@ -1,0 +1,23 @@
+<div class="chat-list-container">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>
+                Chats
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div [ngClass]="{'chat-list-item': true, 'highlighted': !displayedRoom}" (click)="onSelectPublicChat()">
+                <app-image-preloader [imgUrl]="defautPublicChatImage" [styleElements]="styleElementsProfileImage"
+                    [alt]="altProfileImage" [title]="titleProfileImage" class="profile-image"></app-image-preloader>
+                <span class="chat-title">Public chat</span>
+            </div>
+            <div style="border-bottom: solid 1px #797979; margin: 2px 0;"></div>
+            <div [ngClass]="{'chat-list-item': true, 'highlighted': displayedRoom && displayedRoom.id === privateChat.id}"
+                (click)="onSelectPrivateChat(privateChat.id)" *ngFor="let privateChat of privateChats">
+                <app-image-preloader [imgUrl]="privateChat.chatImage" [styleElements]="styleElementsProfileImage"
+                    [alt]="altProfileImage" [title]="titleProfileImage" class="profile-image"></app-image-preloader>
+                <span class="chat-title">{{privateChat.title}}</span>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

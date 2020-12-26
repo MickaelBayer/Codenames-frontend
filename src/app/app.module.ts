@@ -24,6 +24,12 @@ import { PublicChatMessageComponent } from './components/public-chat/public-chat
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { ImagePreloaderComponent } from './components/image-preloader/image-preloader.component';
+import { HomeComponent } from './components/home/home.component';
+import { WelcomeComponent } from './components/welcome/welcome.component';
+import { ChatListComponent } from './components/chat-list/chat-list.component';
+import { ChatService } from './services/chat.service';
+import { PrivateChatComponent } from './components/private-chat/private-chat.component';
+import { PrivateChatMessageComponent } from './components/private-chat/private-chat-message/private-chat-message.component';
 // import { LazyImgDirective } from './lazy-img.directive';
 
 @NgModule({
@@ -42,6 +48,11 @@ import { ImagePreloaderComponent } from './components/image-preloader/image-prel
     PublicChatMessageComponent,
     PageNotFoundComponent,
     ImagePreloaderComponent,
+    HomeComponent,
+    WelcomeComponent,
+    ChatListComponent,
+    PrivateChatComponent,
+    PrivateChatMessageComponent,
     // LazyImgDirective
   ],
   imports: [
@@ -56,6 +67,7 @@ import { ImagePreloaderComponent } from './components/image-preloader/image-prel
   ],
   providers: [
     AccountService,
+    ChatService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ApiInterceptor,

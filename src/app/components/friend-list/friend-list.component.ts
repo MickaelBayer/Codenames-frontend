@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { AccountService } from 'src/app/services/account.service';
 import { Account } from '../../models/account.model';
 import { Router } from '@angular/router';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
   selector: 'app-friend-list',
@@ -34,6 +35,7 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
 
   constructor(
     public accountService: AccountService,
+    private chatService: ChatService,
     private differs: KeyValueDiffers,
     private router: Router
   ) { }
@@ -88,7 +90,12 @@ export class FriendListComponent implements OnInit, OnDestroy, DoCheck {
 
   onSendMessage(friend: Account, event: MouseEvent): void {
     event.stopPropagation();
-    console.log('send a message to ' + friend.username);
+    this.chatService.findOrCreatePrivateChatRoom(friend.id).then(
+      (value: number) => {
+        this.router.navigate(['home', 'private-chat', value]);
+      },
+      (error) => { }
+    );
   }
 
   ngOnDestroy(): void {
